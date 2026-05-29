@@ -1,0 +1,109 @@
+﻿   ABOUT SECTION
+   ================================================================ */
+.about { background: var(--bg-secondary); }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.about-img-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.about-photo {
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  position: relative;
+  z-index: 1;
+}
+
+.about-img-accent {
+  position: absolute;
+  bottom: -16px; right: -16px;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 3/4;
+  border: 2px solid var(--accent-orange);
+  border-radius: var(--radius-lg);
+  opacity: 0.4;
+  z-index: 0;
+}
+
+.about-stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 80px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 12px;
+  text-align: center;
+  transition: all var(--transition);
+}
+.stat-card:hover {
+  border-color: var(--accent-blue);
+  transform: translateY(-4px);
+  box-shadow: var(--glow-blue);
+}
+
+.stat-num {
+  display: block;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.about-heading {
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+}
+
+.about-para {
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  font-size: 0.97rem;
+}
+.about-para strong { color: var(--text-primary); }
+
+.about-highlights {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 28px 0;
+}
+
+.highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+.highlight-item i { color: var(--accent-blue); font-size: 0.85rem; flex-shrink: 0; }
+
+.about-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+
+/* ================================================================
