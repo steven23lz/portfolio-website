@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Steven Floyd Sendrijas — IT Student & Developer</title>
+    <meta name="description"
+        content="Portfolio of Steven Floyd Sendrijas — IT Student and Aspiring Web and Mobile Developer at STI College." />
+
+    <!-- Google Fonts: Syne (display) + DM Sans (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
+        rel="stylesheet" />
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- ===================== NAVIGATION ===================== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-logo">
+                <span class="logo-bracket">&lt;</span>SFS<span class="logo-bracket">/&gt;</span>
+            </a>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#certificate" class="nav-link">Certificate</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <!-- Dark/Light Mode Toggle -->
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                <!-- Mobile hamburger -->
+                <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- ===================== HERO SECTION ===================== -->
+    <section id="home" class="hero">
+        <!-- Animated background blobs -->
+        <div class="hero-bg">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+            <div class="grid-overlay"></div>
+        </div>
+
+        <div class="hero-container">
+            <!-- Left: Text Content -->
+            <div class="hero-content">
+                <div class="hero-badge reveal-item">
+                    <span class="badge-dot"></span>
+                    <span>Available for Internship & Projects</span>
+                </div>
+
+                <h1 class="hero-name reveal-item">
+                    <span class="name-line">Steven Floyd</span>
+                    <span class="name-line accent-text">Sendrijas</span>
+                </h1>
+
+                <p class="hero-title reveal-item">
+                    <span class="typed-text" id="typedText"></span><span class="cursor">|</span>
+                </p>
+
+                <p class="hero-tagline reveal-item">
+                    I build practical web and mobile systems focused on clean design, smooth user experience,
+                    database‑driven functionality, and real‑world problem solving.
+                </p>
+
+                <!-- CTA Buttons -->
+                <div class="hero-buttons reveal-item">
+                    <a href="#projects" class="btn btn-primary">
+                        <i class="fas fa-code"></i> View Projects
+                    </a>
+                    <a href="#certificate" class="btn btn-secondary">
+                        <i class="fas fa-certificate"></i> View Certificate
+                    </a>
+                    <a href="#contact" class="btn btn-outline">
+                        <i class="fas fa-envelope"></i> Contact Me
+                    </a>
+                    <a href="https://github.com/steven23lz" target="_blank" rel="noopener" class="btn btn-ghost">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                </div>
+
+                <!-- Social Icons -->
+                <div class="social-icons reveal-item">
+                    <a href="https://www.facebook.com/steven.sendrijas.5" target="_blank" rel="noopener"
+                        class="social-icon" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.instagram.com/itsme_harutoo/" target="_blank" rel="noopener"
+                        class="social-icon" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://github.com/steven23lz" target="_blank" rel="noopener" class="social-icon"
+                        aria-label="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="mailto:stevensendrijas@gmail.com" class="social-icon" aria-label="Email">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right: Profile Card -->
+            <div class="hero-image-wrap reveal-item">
+                <div class="profile-card">
+                    <div class="profile-ring"></div>
+                    <div class="profile-ring ring-2"></div>
+                    <img src="assets/graduate.jpg" alt="Steven Floyd Sendrijas" class="profile-photo" />
+                    <div class="profile-badge">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>STI College</span>
+                    </div>
+                    <!-- Floating skill chips -->
+                    <div class="float-chip chip-1"><i class="fab fa-html5"></i> HTML5</div>
+                    <div class="float-chip chip-2"><i class="fab fa-react"></i> React</div>
+                    <div class="float-chip chip-3"><i class="fab fa-php"></i> PHP</div>
+                    <div class="float-chip chip-4"><i class="fas fa-mobile-alt"></i> Mobile</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <a href="#about" class="scroll-down" aria-label="Scroll down">
+            <span class="scroll-line"></span>
+            <i class="fas fa-chevron-down"></i>
+        </a>
+    </section>
+
+    <!-- ===================== ABOUT SECTION ===================== -->
+    <section id="about" class="about section">
+        <div class="container">
+            <div class="section-header reveal-item">
+                <span class="section-tag">About Me</span>
+                <h2 class="section-title">Who I Am</h2>
+            </div>
+
+            <div class="about-grid">
+                <div class="about-image-col reveal-item">
+                    <div class="about-img-wrap">
+                        <img src="assets/graduate.jpg" alt="Steven Floyd Sendrijas" class="about-photo" />
+                        <div class="about-img-accent"></div>
+                    </div>
+                    <div class="about-stats">
+                        <div class="stat-card">
+                            <span class="stat-num">3+</span>
+                            <span class="stat-label">Projects Built</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num">13+</span>
+                            <span class="stat-label">Tech Skills</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num">1</span>
+                            <span class="stat-label">Certificate</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-text-col reveal-item">
+                    <h3 class="about-heading">IT Student. System Builder. Problem Solver.</h3>
+                    <p class="about-para">
+                        I am an IT student at <strong>STI College</strong> with a growing focus on building
+                        web‑based and mobile systems that solve real problems. I started with the basics of
+                        HTML, CSS, and JavaScript, and steadily moved into backend development with PHP and
+                        Laravel, database design with MySQL and PostgreSQL, and mobile development using React
+                        Native.
+                    </p>
+                    <p class="about-para">
+                        My projects reflect that progression. I have built a
+                        <strong>Business Permit System</strong> that handles registrations and approval
+                        workflows, a <strong>Clinic Management System</strong> that manages patients,
+                        appointments, and cashier operations for a diagnostic clinic, and <strong>CineBai</strong>,
+                        a mobile cinema ticketing app with QR‑based entry and seat booking. Each project pushed
+                        me to think about usability, database structure, and system flow—not just code.
+                    </p>
+                    <p class="about-para">
+                        I care about clean interfaces, logical database design, and software that is easy to
+                        use. I am detail‑oriented, trainable, and genuinely excited about growing through
+                        real‑world development experience. I am actively looking for opportunities to apply
+                        what I have learned and keep improving as a full‑stack developer.
+                    </p>
+
+                    <div class="about-highlights">
+                        <div class="highlight-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Full‑Stack Web Development</span>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Mobile App Development</span>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Database‑Driven Systems</span>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Responsive UI Design</span>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Oracle Java Certified</span>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Open to Internship Roles</span>
+                        </div>
+                    </div>
+
+                    <div class="about-cta">
+                        <a href="#contact" class="btn btn-primary">Let's Talk</a>
+                        <a href="#projects" class="btn btn-outline">See My Work</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== SKILLS SECTION ===================== -->
+    <section id="skills" class="skills section">
+        <div class="container">
+            <div class="section-header reveal-item">
+                <span class="section-tag">Technical Skills</span>
+                <h2 class="section-title">What I Work With</h2>
+                <p class="section-sub">Technologies and tools I use to build complete, functional systems.</p>
+            </div>
+
+            <div class="skills-grid">
+
+                <!-- Frontend -->
+                <div class="skill-category reveal-item">
+                    <div class="skill-cat-header">
+                        <div class="skill-cat-icon"><i class="fas fa-palette"></i></div>
+                        <h3>Frontend Development</h3>
+                    </div>
+                    <div class="skill-badges">
+                        <div class="skill-badge">
+                            <i class="fab fa-html5"></i>
+                            <span>HTML5</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fab fa-css3-alt"></i>
+                            <span>CSS3</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fab fa-js-square"></i>
+                            <span>JavaScript</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fab fa-react"></i>
+                            <span>React</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fas fa-wind"></i>
+                            <span>Tailwind CSS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backend -->
+                <div class="skill-category reveal-item">
+                    <div class="skill-cat-header">
+                        <div class="skill-cat-icon"><i class="fas fa-server"></i></div>
+                        <h3>Backend Development</h3>
+                    </div>
+                    <div class="skill-badges">
+                        <div class="skill-badge">
+                            <i class="fab fa-php"></i>
+                            <span>PHP</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fab fa-node-js"></i>
+                            <span>Node.js</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fas fa-route"></i>
+                            <span>Express</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Laravel</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fab fa-java"></i>
+                            <span>Java</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile -->
+                <div class="skill-category reveal-item">
+                    <div class="skill-cat-header">
+                        <div class="skill-cat-icon"><i class="fas fa-mobile-alt"></i></div>
+                        <h3>Mobile Development</h3>
+                    </div>
+                    <div class="skill-badges">
+                        <div class="skill-badge">
+                            <i class="fab fa-react"></i>
+                            <span>React Native</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database -->
+                <div class="skill-category reveal-item">
+                    <div class="skill-cat-header">
+                        <div class="skill-cat-icon"><i class="fas fa-database"></i></div>
+                        <h3>Database</h3>
+                    </div>
+                    <div class="skill-badges">
+                        <div class="skill-badge">
+                            <i class="fas fa-table"></i>
+                            <span>MySQL</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fas fa-database"></i>
+                            <span>PostgreSQL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Programming Languages -->
+                <div class="skill-category reveal-item">
+                    <div class="skill-cat-header">
+                        <div class="skill-cat-icon"><i class="fas fa-code"></i></div>
+                        <h3>Programming Languages</h3>
+                    </div>
+                    <div class="skill-badges">
+                        <div class="skill-badge">
+                            <i class="fab fa-java"></i>
+                            <span>Java</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fab fa-python"></i>
+                            <span>Python</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fab fa-js-square"></i>
+                            <span>JavaScript</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fab fa-php"></i>
+                            <span>PHP</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fas fa-database"></i>
+                            <span>SQL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Frameworks & Tools -->
+                <div class="skill-category reveal-item">
+                    <div class="skill-cat-header">
+                        <div class="skill-cat-icon"><i class="fas fa-tools"></i></div>
+                        <h3>Frameworks &amp; Tools</h3>
+                    </div>
+                    <div class="skill-badges">
+                        <div class="skill-badge">
+                            <i class="fab fa-git-alt"></i>
+                            <span>Git</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fab fa-github"></i>
+                            <span>GitHub</span>
+                        </div>
+                        <div class="skill-badge">
+                            <i class="fas fa-terminal"></i>
+                            <span>VS Code</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== PROJECTS SECTION ===================== -->
+    <section id="projects" class="projects section">
+        <div class="container">
+            <div class="section-header reveal-item">
+                <span class="section-tag">My Work</span>
+                <h2 class="section-title">Featured Projects</h2>
+                <p class="section-sub">Real systems built to solve real problems — not just school activities.</p>
+            </div>
+
+            <div class="projects-grid">
+
+                <!-- Project 1: Business Permit System -->
+                <article class="project-card reveal-item">
+                    <div class="project-img-wrap">
+                        <img src="assets/Business Permit.png" alt="Business Permit System Screenshot"
+                            class="project-img" />
+                        <div class="project-overlay">
+                            <span class="overlay-label"><i class="fas fa-image"></i> Screenshot Preview</span>
+                        </div>
+                        <span class="project-num">01</span>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-tags">
+                            <span class="tag">PHP</span>
+                            <span class="tag">Laravel</span>
+                            <span class="tag">MySQL</span>
+                            <span class="tag">Blade</span>
+                        </div>
+                        <h3 class="project-title">Business Permit System</h3>
+                        <p class="project-desc">
+                            A web‑based licensing platform that streamlines business registration, permit
+                            applications, status tracking, and payment management for local government use cases.
+                        </p>
+                        <ul class="project-features">
+                            <li><i class="fas fa-check"></i> Resident &amp; Business Registration</li>
+                            <li><i class="fas fa-check"></i> Permit Application Workflow</li>
+                            <li><i class="fas fa-check"></i> Real‑time Application Tracking</li>
+                            <li><i class="fas fa-check"></i> Payment Management</li>
+                            <li><i class="fas fa-check"></i> Admin Approval Process</li>
+                            <li><i class="fas fa-check"></i> Secure User Authentication</li>
+                        </ul>
+                        <div class="project-actions">
+                            <button type="button" class="btn btn-primary btn-sm project-detail-toggle"
+                                data-details-target="business-details" aria-expanded="false">
+                                <i class="fas fa-eye"></i> View Details
+                            </button>
+                            <a href="#contact" class="btn btn-outline btn-sm">
+                                <i class="fas fa-paper-plane"></i> Discuss Project
+                            </a>
+                        </div>
+                        <div class="project-details" id="business-details" hidden>
+                            <p>
+                                Built around a clear permit workflow: applicants submit business details, admins review
+                                requirements, payments are tracked, and users can monitor application status.
+                            </p>
+                            <span class="detail-note">Role: full-stack development, database flow, and UI layout.</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Project 2: Clinic Management System -->
+                <article class="project-card reveal-item">
+                    <div class="project-img-wrap">
+                        <div class="project-img-duo">
+                            <img src="assets/Login.png" alt="Clinic Login Screen" class="duo-img duo-back" />
+                            <img src="assets/Patient.png" alt="Clinic Patient Dashboard" class="duo-img duo-front" />
+                        </div>
+                        <div class="project-overlay">
+                            <span class="overlay-label"><i class="fas fa-images"></i> Login and Patient Views</span>
+                        </div>
+                        <span class="project-num">02</span>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-tags">
+                            <span class="tag">Laravel</span>
+                            <span class="tag">PostgreSQL</span>
+                            <span class="tag">React</span>
+                            <span class="tag">Tailwind</span>
+                        </div>
+                        <h3 class="project-title">Clinic Management System</h3>
+                        <p class="project-desc">
+                            A full clinic operations system for <strong>Enlogada Ultrasound &amp; Diagnostic
+                                Clinic</strong>. Manages patient records, service requests, appointments, cashier
+                            monitoring, and multi‑role staff access.
+                        </p>
+                        <ul class="project-features">
+                            <li><i class="fas fa-check"></i> Patient &amp; Admin Dashboards</li>
+                            <li><i class="fas fa-check"></i> Staff Account Management</li>
+                            <li><i class="fas fa-check"></i> Service Request &amp; Results</li>
+                            <li><i class="fas fa-check"></i> Appointment Scheduling</li>
+                            <li><i class="fas fa-check"></i> Cashier Monitoring</li>
+                            <li><i class="fas fa-check"></i> Reports &amp; Patient Records</li>
+                        </ul>
+                        <div class="project-actions">
+                            <button type="button" class="btn btn-primary btn-sm project-detail-toggle"
+                                data-details-target="clinic-details" aria-expanded="false">
+                                <i class="fas fa-eye"></i> View Details
+                            </button>
+                            <a href="#contact" class="btn btn-outline btn-sm">
+                                <i class="fas fa-paper-plane"></i> Discuss Project
+                            </a>
+                        </div>
+                        <div class="project-details" id="clinic-details" hidden>
+                            <p>
+                                Reworked as an operations case study instead of a broken demo link. The two screenshots
+                                now show the login flow and patient-facing dashboard from the available project assets.
+                            </p>
+                            <span class="detail-note">Focus: role-based access, patient records, appointments, and
+                                cashier monitoring.</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Project 3: CineBai Mobile Cinema -->
+                <article class="project-card reveal-item">
+                    <div class="project-img-wrap mobile-wrap">
+                        <img src="assets/mobilee.png" alt="CineBai Mobile Cinema Ticketing App"
+                            class="project-img mobile-img" />
+                        <div class="project-overlay">
+                            <span class="overlay-label"><i class="fas fa-mobile-alt"></i> Mobile App Preview</span>
+                        </div>
+                        <span class="project-num">03</span>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-tags">
+                            <span class="tag">React Native</span>
+                            <span class="tag">Node.js</span>
+                            <span class="tag">Express</span>
+                            <span class="tag">PostgreSQL</span>
+                        </div>
+                        <h3 class="project-title">CineBai — Cinema Ticketing App</h3>
+                        <p class="project-desc">
+                            A mobile‑first cinema ticketing system that lets users browse movies, select seats,
+                            manage bookings, process payments, and enter cinemas using QR code scanning.
+                        </p>
+                        <ul class="project-features">
+                            <li><i class="fas fa-check"></i> Movie Browsing &amp; Details</li>
+                            <li><i class="fas fa-check"></i> Interactive Seat Booking</li>
+                            <li><i class="fas fa-check"></i> Ticket Management</li>
+                            <li><i class="fas fa-check"></i> Payment Flow</li>
+                            <li><i class="fas fa-check"></i> QR‑Based Cinema Entry</li>
+                            <li><i class="fas fa-check"></i> Mobile‑Friendly Interface</li>
+                        </ul>
+                        <div class="project-actions">
+                            <button type="button" class="btn btn-primary btn-sm project-detail-toggle"
+                                data-details-target="cinebai-details" aria-expanded="false">
+                                <i class="fas fa-eye"></i> View Details
+                            </button>
+                            <a href="#contact" class="btn btn-outline btn-sm">
+                                <i class="fas fa-paper-plane"></i> Discuss Project
+                            </a>
+                        </div>
+                        <div class="project-details" id="cinebai-details" hidden>
+                            <p>
+                                A mobile ticketing flow designed around movie discovery, seat selection, payments,
+                                booking records, and QR-based cinema entry.
+                            </p>
+                            <span class="detail-note">Role: mobile UI, API planning, ticket flow, and database-backed
+                                features.</span>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== CERTIFICATE SECTION ===================== -->
+    <section id="certificate" class="certificate section">
+        <div class="container">
+            <div class="section-header reveal-item">
+                <span class="section-tag">Achievements</span>
+                <h2 class="section-title">Certifications</h2>
+                <p class="section-sub">Verified credentials that back up my technical knowledge.</p>
+            </div>
+
+            <div class="cert-wrapper reveal-item">
+                <div class="cert-card">
+                    <div class="cert-left">
+                        <div class="cert-issuer">
+                            <div class="oracle-logo">
+                                <span class="oracle-text">ORACLE</span>
+                                <span class="academy-text">Academy</span>
+                            </div>
+                        </div>
+                        <div class="cert-badge-wrap">
+                            <div class="cert-badge-icon">
+                                <i class="fab fa-java"></i>
+                            </div>
+                            <div class="cert-glow"></div>
+                        </div>
+                        <div class="cert-meta">
+                            <span class="cert-type-label">Course Completion</span>
+                        </div>
+                    </div>
+
+                    <div class="cert-right">
+                        <div class="cert-top-label">Award of Course Completion</div>
+                        <h3 class="cert-name">Java Fundamentals</h3>
+                        <p class="cert-recipient">Presented to <strong>Steven Floyd Sendrijas</strong></p>
+                        <p class="cert-date">
+                            <i class="far fa-calendar-alt"></i> Completed: June 19, 2024
+                        </p>
+                        <p class="cert-description">
+                            Awarded by Oracle Academy for the satisfactory completion of all coursework in
+                            Java Fundamentals. This certification demonstrates foundational programming knowledge
+                            including object‑oriented principles, data structures, and core Java syntax.
+                        </p>
+
+                        <div class="cert-actions">
+                            <a href="assets/certificate.pdf" target="_blank" rel="noopener" class="btn btn-primary">
+                                <i class="fas fa-eye"></i> View Certificate
+                            </a>
+                        </div>
+
+                        <div class="cert-verified">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Verified by Oracle Academy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== CONTACT SECTION ===================== -->
+    <section id="contact" class="contact section">
+        <div class="container">
+            <div class="section-header reveal-item">
+                <span class="section-tag">Get In Touch</span>
+                <h2 class="section-title">Contact Me</h2>
+                <p class="section-sub">Open to internship opportunities, collaborations, and conversations about
+                    development.</p>
+            </div>
+
+            <div class="contact-grid">
+
+                <!-- Contact Info -->
+                <div class="contact-info reveal-item">
+                    <h3 class="contact-info-title">Let's Connect</h3>
+                    <p class="contact-info-sub">
+                        Whether you have a project in mind, an internship offer, or just want to say hi —
+                        my inbox is open.
+                    </p>
+
+                    <div class="contact-items">
+                        <a href="mailto:stevensendrijas@gmail.com" class="contact-item">
+                            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                            <div class="contact-detail">
+                                <span class="contact-label">Email</span>
+                                <span class="contact-value">stevensendrijas@gmail.com</span>
+                            </div>
+                        </a>
+
+                        <a href="tel:09150448104" class="contact-item">
+                            <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                            <div class="contact-detail">
+                                <span class="contact-label">Phone</span>
+                                <span class="contact-value">09150448104</span>
+                            </div>
+                        </a>
+
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div class="contact-detail">
+                                <span class="contact-label">Location</span>
+                                <span class="contact-value">Patag Zone 7, Cagayan de Oro City, Misamis Oriental
+                                    9000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-socials">
+                        <a href="https://www.facebook.com/steven.sendrijas.5" target="_blank" rel="noopener"
+                            class="social-icon">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://www.instagram.com/itsme_harutoo/" target="_blank" rel="noopener"
+                            class="social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://github.com/steven23lz" target="_blank" rel="noopener" class="social-icon">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="contact-form-wrap reveal-item">
+                    <!-- Success Message (hidden by default) -->
+                    <div class="form-success" id="formSuccess">
+                        <i class="fas fa-check-circle"></i>
+                        <h4>Message Sent!</h4>
+                        <p>Thank you for reaching out. I'll get back to you as soon as possible.</p>
+                    </div>
+
+                    <form class="contact-form" id="contactForm" novalidate>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Full Name</label>
+                                <input type="text" id="name" name="name" placeholder="Your full name" required />
+                                <span class="field-error" id="nameError"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" placeholder="your@email.com" required />
+                                <span class="field-error" id="emailError"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" placeholder="What is this about?" required />
+                            <span class="field-error" id="subjectError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5"
+                                placeholder="Tell me about your project or opportunity..." required></textarea>
+                            <span class="field-error" id="messageError"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+                            <span class="btn-text"><i class="fas fa-paper-plane"></i> Send Message</span>
+                            <span class="btn-loader" style="display:none;"><i class="fas fa-spinner fa-spin"></i>
+                                Sending...</span>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-top">
+
+                <div class="footer-brand">
+                    <a href="#home" class="footer-logo">
+                        <span class="logo-bracket">&lt;</span>SFS<span class="logo-bracket">/&gt;</span>
+                    </a>
+                    <p class="footer-tagline">
+                        Steven Floyd Sendrijas<br />
+                        IT Student — STI College
+                    </p>
+                    <p class="footer-sub">Web System Technologies Final Project</p>
+                </div>
+
+                <div class="footer-links-col">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#skills">Skills</a></li>
+                        <li><a href="#projects">Projects</a></li>
+                        <li><a href="#certificate">Certificate</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>
+                            <a href="mailto:stevensendrijas@gmail.com">
+                                <i class="fas fa-envelope"></i> stevensendrijas@gmail.com
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tel:09150448104">
+                                <i class="fas fa-phone"></i> 09150448104
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="footer-links-col">
+                    <h4>Connect</h4>
+                    <ul>
+                        <li>
+                            <a href="https://www.facebook.com/steven.sendrijas.5" target="_blank" rel="noopener">
+                                <i class="fab fa-facebook-f"></i> Facebook
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.instagram.com/itsme_harutoo/" target="_blank" rel="noopener">
+                                <i class="fab fa-instagram"></i> Instagram
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/steven23lz" target="_blank" rel="noopener">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Steven Floyd Sendrijas. All rights reserved.</p>
+                <p>Built with <i class="fas fa-heart" style="color:var(--accent-red)"></i> using HTML, CSS &amp;
+                    JavaScript</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to top button -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="js/managers/theme-manager.js"></script>
+    <script src="js/managers/navigation-manager.js"></script>
+    <script src="js/managers/typewriter-manager.js"></script>
+    <script src="js/managers/scroll-reveal-manager.js"></script>
+    <script src="js/managers/contact-form-manager.js"></script>
+    <script src="js/managers/back-to-top-manager.js"></script>
+    <script src="js/managers/project-interaction-manager.js"></script>
+    <script src="js/managers/image-viewer-manager.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
