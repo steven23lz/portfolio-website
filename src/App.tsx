@@ -1,36 +1,10 @@
 import React, { useEffect, useRef, useState } from "react"
 import { flushSync } from "react-dom"
-import { AnimatePresence, motion } from "framer-motion"
+import { motion } from "framer-motion"
 import {
-  ArrowUpRight,
-  Award,
-  Check,
-  ChevronDown,
-  Copy,
-  Eye,
-  FileText,
-  Github,
-  Grid,
-  ListFilter,
-  Mail,
-  MapPin,
-  Menu,
-  Moon,
-  Pause,
-  Phone,
-  Play,
-  Send,
-  Sun,
-  X,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
-import {
-  CERTIFICATE_DATA,
   PROFILE_DATA,
   PROJECTS_DATA,
-  SKILL_DOMAINS,
+  SKILL_CATEGORIES,
   TECH_MARQUEE_ITEMS,
   type ProjectCategory,
   type ProjectItem,
@@ -41,109 +15,109 @@ import {
   showDiscreteElement,
 } from "@/lib/utils"
 
-const NAV_ITEMS = [
-  { id: "projects", index: "01", label: "Selected Work" },
-  { id: "skills", index: "02", label: "Technical Ledger" },
-  { id: "certificate", index: "03", label: "Credentials" },
-  { id: "contact", index: "04", label: "Correspondence" },
+const NAV_LINKS = [
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "skills", label: "Skills" },
+  { id: "projects", label: "Projects" },
+  { id: "certificate", label: "Certificate" },
+  { id: "contact", label: "Contact" },
 ]
 
-const CATEGORY_TABS: { id: ProjectCategory; label: string; count: number }[] = [
-  { id: "all", label: "All Works", count: PROJECTS_DATA.length },
-  {
-    id: "bots",
-    label: "Voice & AI Bots",
-    count: PROJECTS_DATA.filter((p) => p.category === "bots").length,
-  },
-  {
-    id: "games",
-    label: "Games & Mobile",
-    count: PROJECTS_DATA.filter((p) => p.category === "games").length,
-  },
-  {
-    id: "web",
-    label: "Web Systems",
-    count: PROJECTS_DATA.filter((p) => p.category === "web").length,
-  },
+const PROJECT_FILTERS: { id: ProjectCategory; label: string }[] = [
+  { id: "all", label: "All Projects (6)" },
+  { id: "web", label: "Web Systems (3)" },
+  { id: "games", label: "Game & Mobile (2)" },
+  { id: "bots", label: "Discord & AI Bot (1)" },
 ]
 
 export function App() {
   const [theme, setTheme] = useState<"dark" | "light">("dark")
-  const [activeNav, setActiveNav] = useState<string>("projects")
+  const [activeNav, setActiveNav] = useState<string>("home")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [localTime, setLocalTime] = useState<string>("")
+  const [scrolled, setScrolled] = useState(false)
+  const [showBackToTop, setShowBackToTop] = useState(false)
   const [marqueePaused, setMarqueePaused] = useState(false)
+
+  // Typewriter state
+  const [typedText, setTypedText] = useState("")
+  const [roleIdx, setRoleIdx] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Projects state
   const [activeCategory, setActiveCategory] = useState<ProjectCategory>("all")
-  const [layoutMode, setLayoutMode] = useState<"editorial" | "compact">("editorial")
-  const [cardImageIndex, setCardImageIndex] = useState<Record<string, number>>({})
-  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({})
-
-  // Native <dialog> modal state
-  const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null)
-  const [modalImageIdx, setModalImageIdx] = useState(0)
-  const dialogRef = useRef<HTMLDialogElement | null>(null)
-  const projectsHeadingRef = useRef<HTMLHeadingElement | null>(null)
+  const [expandedDetails, setExpandedDetails] = useState<Record<string, boolean>>({})
   const detailRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const projectsHeadingRef = useRef<HTMLHeadingElement | null>(null)
 
-  // Contact state
-  const [copiedField, setCopiedField] = useState<"email" | "phone" | null>(null)
-  const [contactForm, setContactForm] = useState({
+  // Native <dialog> Image Viewer state
+  const [viewerProject, setViewerProject] = useState<ProjectItem | null>(null)
+  const [viewerIndex, setViewerIndex] = useState(0)
+  const dialogRef = useRef<HTMLDialogElement | null>(null)
+
+  // Contact form state
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     subject: "",
     message: "",
   })
-  const [formSubmitted, setFormSubmitted] = useState(false)
+  const [formSent, setFormSent] = useState(false)
 
-  // 1. Scroll progress bar fallback for browsers without CSS animation-timeline: scroll()
+  // 1. Scroll progress bar fallback + navbar scrolled / back-to-top state
   useEffect(() => {
-    if (
+    const supportsScrollTimeline =
       typeof window !== "undefined" &&
-      !window.CSS?.supports?.("animation-timeline", "scroll()")
-    ) {
-      const progress = document.querySelector<HTMLElement>("#scroll-progress")
-      if (!progress) return
+      Boolean(window.CSS?.supports?.("animation-timeline", "scroll()"))
+    const progressEl = document.querySelector<HTMLElement>("#scroll-progress")
 
-      const onScroll = () => {
+    const onScroll = () => {
+      const y = window.scrollY
+      setScrolled(y > 24)
+      setShowBackToTop(y > 420)
+
+      if (!supportsScrollTimeline && progressEl) {
         const scrollable =
           document.documentElement.scrollHeight - window.innerHeight
-        const scrolled = window.scrollY
         const ratio =
-          scrollable > 0 ? Math.min(1, Math.max(0, scrolled / scrollable)) : 0
-        progress.style.transform = `scaleX(${ratio})`
+          scrollable > 0 ? Math.min(1, Math.max(0, y / scrollable)) : 0
+        progressEl.style.transform = `scaleX(${ratio})`
       }
-
-      window.addEventListener("scroll", onScroll, { passive: true })
-      onScroll()
-      return () => window.removeEventListener("scroll", onScroll)
     }
+
+    window.addEventListener("scroll", onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  // 2. Live Cebu (UTC+8) clock in header
+  // 2. Smooth typewriter effect in Hero
   useEffect(() => {
-    const updateClock = () => {
-      try {
-        const formatter = new Intl.DateTimeFormat("en-US", {
-          timeZone: "Asia/Manila",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        })
-        setLocalTime(formatter.format(new Date()))
-      } catch {
-        setLocalTime("UTC+8")
+    const currentWord = PROFILE_DATA.typedRoles[roleIdx]
+    const speed = isDeleting ? 40 : 85
+
+    const timer = window.setTimeout(() => {
+      if (!isDeleting && typedText === currentWord) {
+        window.setTimeout(() => setIsDeleting(true), 1400)
+        return
       }
-    }
-    updateClock()
-    const timer = window.setInterval(updateClock, 30000)
-    return () => window.clearInterval(timer)
-  }, [])
+      if (isDeleting && typedText === "") {
+        setIsDeleting(false)
+        setRoleIdx((prev) => (prev + 1) % PROFILE_DATA.typedRoles.length)
+        return
+      }
+      setTypedText(
+        isDeleting
+          ? currentWord.substring(0, typedText.length - 1)
+          : currentWord.substring(0, typedText.length + 1)
+      )
+    }, speed)
+
+    return () => window.clearTimeout(timer)
+  }, [typedText, isDeleting, roleIdx])
 
   // 3. Active section IntersectionObserver
   useEffect(() => {
-    const sections = NAV_ITEMS.map((item) =>
+    const sections = NAV_LINKS.map((item) =>
       document.getElementById(item.id)
     ).filter(Boolean) as HTMLElement[]
 
@@ -156,7 +130,7 @@ export function App() {
           setActiveNav(visible[0].target.id)
         }
       },
-      { threshold: [0.15, 0.4], rootMargin: "-80px 0px -40% 0px" }
+      { threshold: [0.2, 0.5], rootMargin: "-72px 0px -35% 0px" }
     )
 
     sections.forEach((sec) => observer.observe(sec))
@@ -196,32 +170,31 @@ export function App() {
     }
   }, [])
 
-  // Theme switch with View Transition fallback
+  // Theme toggle wrapped in View Transitions API
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark"
-    const applyTheme = () => {
+    const apply = () => {
       setTheme(nextTheme)
       const root = document.documentElement
+      root.setAttribute("data-theme", nextTheme)
       if (nextTheme === "dark") {
         root.classList.add("dark")
-        root.setAttribute("data-theme", "dark")
       } else {
         root.classList.remove("dark")
-        root.setAttribute("data-theme", "light")
       }
     }
 
     if (document.startViewTransition) {
       document.startViewTransition(() => {
-        flushSync(() => applyTheme())
+        flushSync(() => apply())
       })
     } else {
-      applyTheme()
+      apply()
     }
   }
 
-  // Filter projects with View Transitions API + Mandatory Focus Routing
-  const handleCategoryChange = (category: ProjectCategory) => {
+  // Category filter with View Transitions API + focus routing
+  const handleFilterChange = (category: ProjectCategory) => {
     if (category === activeCategory) return
 
     if (!document.startViewTransition) {
@@ -241,25 +214,25 @@ export function App() {
     })
   }
 
-  // Discrete entry/exit toggle for architecture drawer on project row
-  const toggleCardArchitecture = async (projectId: string) => {
+  // Discrete entry/exit toggle for project details
+  const toggleProjectDetails = async (projectId: string) => {
     const el = detailRefs.current[projectId]
     if (!el) return
 
-    const isCurrentlyOpen = Boolean(expandedCards[projectId])
-    if (isCurrentlyOpen) {
-      setExpandedCards((prev) => ({ ...prev, [projectId]: false }))
+    const isOpen = Boolean(expandedDetails[projectId])
+    if (isOpen) {
+      setExpandedDetails((prev) => ({ ...prev, [projectId]: false }))
       await hideDiscreteElement(el)
     } else {
       showDiscreteElement(el)
-      setExpandedCards((prev) => ({ ...prev, [projectId]: true }))
+      setExpandedDetails((prev) => ({ ...prev, [projectId]: true }))
     }
   }
 
-  // Open top-layer <dialog> modal
-  const openProjectModal = (project: ProjectItem, initialImgIdx = 0) => {
-    setSelectedProject(project)
-    setModalImageIdx(initialImgIdx)
+  // Open native <dialog> image viewer
+  const openImageViewer = (project: ProjectItem, startIdx = 0) => {
+    setViewerProject(project)
+    setViewerIndex(startIdx)
     requestAnimationFrame(() => {
       const dialog = dialogRef.current
       if (dialog && !dialog.open) {
@@ -268,34 +241,29 @@ export function App() {
     })
   }
 
-  const closeProjectModal = () => {
+  const closeImageViewer = () => {
     const dialog = dialogRef.current
     if (dialog) {
       closeTopLayer(dialog)
     }
   }
 
-  const copyToClipboard = async (value: string, field: "email" | "phone") => {
-    try {
-      await navigator.clipboard.writeText(value)
-      setCopiedField(field)
-      window.setTimeout(() => setCopiedField(null), 2200)
-    } catch {
-      // Fallback
-    }
+  const stepViewerImage = (dir: number) => {
+    if (!viewerProject) return
+    const total = viewerProject.images.length
+    setViewerIndex((prev) => (prev + dir + total) % total)
   }
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const subject = encodeURIComponent(
-      contactForm.subject || `Portfolio Inquiry from ${contactForm.name}`
+      formData.subject || `Portfolio Message from ${formData.name}`
     )
     const body = encodeURIComponent(
-      `Name: ${contactForm.name}\nEmail: ${contactForm.email}\n\n${contactForm.message}`
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`
     )
     window.location.href = `mailto:${PROFILE_DATA.email}?subject=${subject}&body=${body}`
-    setFormSubmitted(true)
-    window.setTimeout(() => setFormSubmitted(false), 4000)
+    setFormSent(true)
   }
 
   const filteredProjects =
@@ -304,1265 +272,1074 @@ export function App() {
       : PROJECTS_DATA.filter((p) => p.category === activeCategory)
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Decorative Scroll Progress Bar (scroll-progress-indicator) */}
+    <>
+      {/* Decorative Scroll Progress Indicator (scroll-progress-indicator) */}
       <div id="scroll-progress" aria-hidden="true" />
 
-      {/* =================================================================
-          ARCHITECTURAL TOP INDEX BAR
-         ================================================================= */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          {/* Left: Identity & Location */}
-          <div className="flex items-center gap-6">
-            <a
-              href="#home"
-              className="flex items-baseline gap-2 focus:outline-none"
-            >
-              <span className="font-display text-base font-extrabold uppercase tracking-tight">
-                Steven Sendrijas
-              </span>
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            </a>
+      {/* ===================== NAVIGATION ===================== */}
+      <nav className={`navbar ${scrolled ? "scrolled" : ""}`} id="navbar">
+        <div className="nav-container">
+          <a href="#home" className="nav-logo">
+            <span className="logo-bracket">&lt;</span>SFS
+            <span className="logo-bracket">/&gt;</span>
+          </a>
 
-            <div className="hidden items-center gap-2 border-l border-border pl-6 font-mono text-[11px] text-muted-foreground xl:flex">
-              <MapPin className="h-3 w-3 text-primary" />
-              <span>CEBU, PH</span>
-              {localTime && (
-                <>
-                  <span>—</span>
-                  <span className="text-foreground">{localTime}</span>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Center: Numbered Section Index */}
-          <nav
-            aria-label="Primary Navigation"
-            className="hidden items-center gap-7 md:flex"
+          <ul
+            className={`nav-links ${mobileMenuOpen ? "open" : ""}`}
+            id="navLinks"
           >
-            {NAV_ITEMS.map((item) => {
-              const isActive = activeNav === item.id
-              return (
+            {NAV_LINKS.map((item) => (
+              <li key={item.id}>
                 <a
-                  key={item.id}
                   href={`#${item.id}`}
-                  onClick={() => setActiveNav(item.id)}
-                  className={`relative py-5 font-mono text-xs uppercase tracking-wider transition-colors ${
-                    isActive
-                      ? "font-semibold text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                  onClick={() => {
+                    setActiveNav(item.id)
+                    setMobileMenuOpen(false)
+                  }}
+                  className={`nav-link ${
+                    activeNav === item.id ? "active" : ""
                   }`}
                 >
-                  <span className="mr-1.5 text-primary">{item.index}/</span>
-                  <span>{item.label}</span>
-                  {isActive && (
-                    <motion.span
-                      layoutId="editorial-nav-line"
-                      transition={{ type: "spring", stiffness: 400, damping: 34 }}
-                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary"
-                    />
-                  )}
+                  {item.label}
                 </a>
-              )
-            })}
-          </nav>
+              </li>
+            ))}
+          </ul>
 
-          {/* Right: Theme Switcher & GitHub */}
-          <div className="flex items-center gap-2.5">
+          <div className="nav-actions">
             <button
               type="button"
+              className="theme-toggle"
               onClick={toggleTheme}
-              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-              className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-secondary/50 px-3 font-mono text-[11px] uppercase tracking-wider text-foreground transition-colors hover:border-primary/50"
+              aria-label="Toggle theme"
             >
-              {theme === "dark" ? (
-                <>
-                  <Sun className="h-3.5 w-3.5 text-[#d4a359]" />
-                  <span className="hidden sm:inline">Paper</span>
-                </>
-              ) : (
-                <>
-                  <Moon className="h-3.5 w-3.5 text-primary" />
-                  <span className="hidden sm:inline">Carbon</span>
-                </>
-              )}
+              <i
+                className={theme === "dark" ? "fas fa-sun" : "fas fa-moon"}
+              ></i>
             </button>
 
-            <a
-              href={PROFILE_DATA.github}
-              target="_blank"
-              rel="noreferrer"
-              className="hidden sm:inline-flex"
-            >
-              <Button variant="outline" size="sm">
-                <Github className="h-3.5 w-3.5" />
-                <span>GitHub</span>
-                <ArrowUpRight className="h-3 w-3" />
-              </Button>
-            </a>
-
-            <Button
-              variant="outline"
-              size="icon"
-              className="md:hidden"
+            <button
+              type="button"
+              className={`hamburger ${mobileMenuOpen ? "open" : ""}`}
               onClick={() => setMobileMenuOpen((prev) => !prev)}
-              aria-label="Toggle navigation menu"
+              aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? (
-                <X className="h-4 w-4" />
-              ) : (
-                <Menu className="h-4 w-4" />
-              )}
-            </Button>
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
           </div>
         </div>
+      </nav>
 
-        {/* Mobile Navigation Drawer */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
+      {/* Mobile Menu Overlay */}
+      <div
+        className={`mobile-overlay ${mobileMenuOpen ? "open" : ""}`}
+        onClick={() => setMobileMenuOpen(false)}
+      ></div>
+
+      {/* ===================== HERO SECTION ===================== */}
+      <section id="home" className="hero">
+        <div className="hero-bg">
+          <div className="blob blob-1"></div>
+          <div className="blob blob-2"></div>
+          <div className="blob blob-3"></div>
+          <div className="grid-overlay"></div>
+        </div>
+
+        <div className="hero-container">
+          {/* Left: Text Content */}
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="hero-content"
+          >
+            <div className="hero-badge">
+              <span className="badge-dot"></span>
+              <span>Available for Internship &amp; Projects</span>
+            </div>
+
+            <h1 className="hero-name">
+              <span className="name-line">{PROFILE_DATA.firstName}</span>
+              <span className="name-line accent-text">
+                {PROFILE_DATA.lastName}
+              </span>
+            </h1>
+
+            <p className="hero-title">
+              <span className="typed-text">{typedText}</span>
+              <span className="cursor">|</span>
+            </p>
+
+            <p className="hero-tagline">{PROFILE_DATA.tagline}</p>
+
+            {/* CTA Buttons */}
+            <div className="hero-buttons">
+              <a href="#projects" className="btn btn-primary">
+                <i className="fas fa-code"></i> View Projects
+              </a>
+              <a href="#certificate" className="btn btn-secondary">
+                <i className="fas fa-certificate"></i> View Certificate
+              </a>
+              <a href="#contact" className="btn btn-outline">
+                <i className="fas fa-envelope"></i> Contact Me
+              </a>
+              <a
+                href={PROFILE_DATA.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-ghost"
+              >
+                <i className="fab fa-github"></i> GitHub
+              </a>
+            </div>
+
+            {/* Social Icons */}
+            <div className="social-icons">
+              <a
+                href={PROFILE_DATA.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-icon"
+                aria-label="Facebook"
+              >
+                <i className="fab fa-facebook-f"></i>
+              </a>
+              <a
+                href={PROFILE_DATA.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-icon"
+                aria-label="Instagram"
+              >
+                <i className="fab fa-instagram"></i>
+              </a>
+              <a
+                href={PROFILE_DATA.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-icon"
+                aria-label="GitHub"
+              >
+                <i className="fab fa-github"></i>
+              </a>
+              <a
+                href={`mailto:${PROFILE_DATA.email}`}
+                className="social-icon"
+                aria-label="Email"
+              >
+                <i className="fas fa-envelope"></i>
+              </a>
+            </div>
+          </motion.div>
+
+          {/* Right: Profile Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.65, delay: 0.1 }}
+            className="hero-image-wrap"
+          >
+            <div className="profile-card">
+              <div className="profile-ring"></div>
+              <div className="profile-ring ring-2"></div>
+              <img
+                src={PROFILE_DATA.avatar}
+                alt={PROFILE_DATA.fullName}
+                className="profile-photo"
+              />
+              <div className="profile-badge">
+                <i className="fas fa-graduation-cap"></i>
+                <span>{PROFILE_DATA.school}</span>
+              </div>
+              {/* Floating skill chips */}
+              <div className="float-chip chip-1">
+                <i className="fab fa-react"></i> React &amp; TS
+              </div>
+              <div className="float-chip chip-2">
+                <i className="fas fa-gamepad"></i> Unity C#
+              </div>
+              <div className="float-chip chip-3">
+                <i className="fab fa-laravel"></i> Laravel
+              </div>
+              <div className="float-chip chip-4">
+                <i className="fab fa-discord"></i> Discord.js
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Scroll indicator */}
+        <a href="#about" className="scroll-down" aria-label="Scroll down">
+          <span className="scroll-line"></span>
+          <i className="fas fa-chevron-down"></i>
+        </a>
+      </section>
+
+      {/* ===================== ABOUT SECTION ===================== */}
+      <section id="about" className="about section">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="section-header"
+          >
+            <span className="section-tag">About Me</span>
+            <h2 className="section-title">Who I Am</h2>
+          </motion.div>
+
+          <div className="about-grid">
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="border-t border-border bg-background px-4 py-4 md:hidden"
+              initial={{ opacity: 0, x: -24 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.55 }}
+              className="about-image-col"
             >
-              <div className="flex flex-col space-y-2">
-                {NAV_ITEMS.map((item) => (
-                  <a
-                    key={item.id}
-                    href={`#${item.id}`}
-                    onClick={() => {
-                      setActiveNav(item.id)
-                      setMobileMenuOpen(false)
-                    }}
-                    className="flex items-center justify-between rounded-md px-3 py-2 font-mono text-xs uppercase tracking-wider hover:bg-secondary"
-                  >
-                    <span>
-                      <span className="mr-2 text-primary">{item.index}/</span>
-                      {item.label}
-                    </span>
-                    <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground" />
-                  </a>
-                ))}
+              <div className="about-img-wrap">
+                <img
+                  src={PROFILE_DATA.avatar}
+                  alt={PROFILE_DATA.fullName}
+                  className="about-photo"
+                />
+                <div className="about-img-accent"></div>
+              </div>
+              <div className="about-stats">
+                <div className="stat-card">
+                  <span className="stat-num">6+</span>
+                  <span className="stat-label">Projects Built</span>
+                </div>
+                <div className="stat-card">
+                  <span className="stat-num">18+</span>
+                  <span className="stat-label">Tech Skills</span>
+                </div>
+                <div className="stat-card">
+                  <span className="stat-num">1</span>
+                  <span className="stat-label">Certificate</span>
+                </div>
               </div>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
 
-      <main>
-        {/* =================================================================
-            ASYMMETRIC EDITORIAL HERO & FIELD DOSSIER
-           ================================================================= */}
-        <section
-          id="home"
-          className="mx-auto max-w-7xl border-b border-border px-4 pt-10 pb-16 sm:px-6 lg:px-8 lg:pt-16 lg:pb-24"
-        >
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
-            {/* Left 8 Columns: Editorial Statement & Featured Index */}
-            <div className=" flex flex-col justify-between lg:col-span-8 lg:border-r lg:border-border lg:pr-10">
-              <div>
-                <div className="flex flex-wrap items-center gap-3 font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                  <span className="inline-flex items-center gap-2 text-primary">
-                    <span className="h-2 w-2 rounded-full bg-[#4d9375]" />
-                    <span>Available for Software &amp; Game Engineering</span>
-                  </span>
-                  <span>/</span>
-                  <span>FOLIO EDITION 2026</span>
+            <motion.div
+              initial={{ opacity: 0, x: 24 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.55 }}
+              className="about-text-col"
+            >
+              <h3 className="about-heading">
+                IT Student. System Builder. Problem Solver.
+              </h3>
+              <p className="about-para">
+                I am an IT student at <strong>STI College</strong> focused on
+                building web-based, game, and mobile systems that solve real
+                problems. I started with HTML, CSS, and JavaScript, and expanded
+                into full-stack engineering with React, TypeScript, Node.js, PHP,
+                and Laravel, relational databases with PostgreSQL and MySQL, game
+                development in Unity 6 (C#), and mobile development using React
+                Native.
+              </p>
+              <p className="about-para">
+                My projects reflect that range. I built{" "}
+                <strong>Trivia Attack</strong>, a 2D educational turn-based RPG in
+                Unity 6 with 1,449 questions across 5 worlds;{" "}
+                <strong>OverView</strong>, a full-stack movie, TV, and anime
+                streaming platform with an automated HLS video discovery engine;
+                and <strong>SpotiBAI</strong>, a Discord music and Bisaya AI
+                companion bot with real-time FFmpeg audio filters and bulk song
+                queueing—alongside my <strong>Business Permit System</strong>,{" "}
+                <strong>Clinic Management System</strong> for Enlogada Diagnostic
+                Clinic, and <strong>CineBai</strong> mobile cinema ticketing app.
+              </p>
+              <p className="about-para">
+                I care about clean interfaces, logical database design, and
+                software that feels great to use. I am detail-oriented,
+                trainable, and excited about growing through real-world
+                development experience.
+              </p>
+
+              <div className="about-highlights">
+                <div className="highlight-item">
+                  <i className="fas fa-check-circle"></i>
+                  <span>Full-Stack Web Development</span>
                 </div>
-
-                <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.06] tracking-tight sm:text-6xl lg:text-[4.1rem]">
-                  Engineering{" "}
-                  <span className="font-serif-editorial italic font-normal text-primary">
-                    full-stack platforms,
-                  </span>{" "}
-                  2D RPGs &amp;{" "}
-                  <span className="font-serif-editorial italic font-normal text-[#d4a359]">
-                    real-time voice bots.
-                  </span>
-                </h1>
-
-                <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                  I&apos;m{" "}
-                  <strong className="font-semibold text-foreground">
-                    {PROFILE_DATA.name}
-                  </strong>
-                  , a developer based in Cebu, Philippines. I build software from
-                  the database schema and audio pipeline up to the user interface—whether
-                  that&apos;s a 48kHz Opus Discord music &amp; Bisaya AI bot, a 1,449-question
-                  Unity 6 RPG, or a multi-source HLS streaming platform.
-                </p>
-
-                <div className="mt-8 flex flex-wrap items-center gap-3">
-                  <a href="#projects">
-                    <Button size="lg">
-                      <span>Inspect Selected Work (06)</span>
-                      <ArrowUpRight className="h-4 w-4" />
-                    </Button>
-                  </a>
-                  <a
-                    href={PROFILE_DATA.certificatePdf}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <Button variant="outline" size="lg">
-                      <FileText className="h-3.5 w-3.5 text-primary" />
-                      <span>Oracle Java Certificate</span>
-                    </Button>
-                  </a>
+                <div className="highlight-item">
+                  <i className="fas fa-check-circle"></i>
+                  <span>Unity 2D Game &amp; Mobile Dev</span>
+                </div>
+                <div className="highlight-item">
+                  <i className="fas fa-check-circle"></i>
+                  <span>Database-Driven Systems</span>
+                </div>
+                <div className="highlight-item">
+                  <i className="fas fa-check-circle"></i>
+                  <span>Discord Bots &amp; Real-Time Audio</span>
+                </div>
+                <div className="highlight-item">
+                  <i className="fas fa-check-circle"></i>
+                  <span>Oracle Java Certified</span>
+                </div>
+                <div className="highlight-item">
+                  <i className="fas fa-check-circle"></i>
+                  <span>Open to Internship &amp; Dev Roles</span>
                 </div>
               </div>
 
-              {/* Interactive Featured Index Table */}
-              <div className="mt-12 border-t border-border pt-6">
-                <div className="mb-3 flex items-center justify-between font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-                  <span>RECENT SHIPPED SYSTEMS (CLICK TO INSPECT)</span>
-                  <span>2025 — 2026</span>
-                </div>
+              <div className="about-cta">
+                <a href="#contact" className="btn btn-primary">
+                  Let&apos;s Talk
+                </a>
+                <a href="#projects" className="btn btn-outline">
+                  See My Work
+                </a>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
-                <div className="divide-y divide-border border-y border-border">
-                  {PROJECTS_DATA.slice(0, 3).map((proj) => (
-                    <button
-                      key={proj.id}
-                      type="button"
-                      onClick={() => openProjectModal(proj, 0)}
-                      className="group flex w-full items-center justify-between py-3.5 text-left transition-colors hover:bg-secondary/40 px-2"
-                    >
-                      <div className="flex items-baseline gap-4">
-                        <span className="font-mono text-xs font-semibold text-primary">
-                          {proj.index}
-                        </span>
-                        <div>
-                          <span className="font-display text-base font-bold text-foreground group-hover:text-primary transition-colors">
-                            {proj.shortTitle}
-                          </span>
-                          <span className="ml-3 hidden font-mono text-xs text-muted-foreground sm:inline">
-                            {proj.subtitle.split("•").slice(0, 3).join("•")}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant="secondary">{proj.categoryLabel}</Badge>
-                        <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
-                      </div>
-                    </button>
+      {/* ===================== SKILLS SECTION ===================== */}
+      <section id="skills" className="skills section">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="section-header"
+          >
+            <span className="section-tag">Technical Skills</span>
+            <h2 className="section-title">What I Work With</h2>
+            <p className="section-sub">
+              Technologies and tools I use to build complete, functional web,
+              game, mobile, and bot systems.
+            </p>
+          </motion.div>
+
+          <div className="skills-grid">
+            {SKILL_CATEGORIES.map((cat, idx) => (
+              <motion.div
+                key={cat.id}
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, delay: idx * 0.06 }}
+                className="skill-category"
+              >
+                <div className="skill-cat-header">
+                  <div className="skill-cat-icon">
+                    <i className={cat.icon}></i>
+                  </div>
+                  <h3>{cat.title}</h3>
+                </div>
+                <div className="skill-badges">
+                  {cat.badges.map((badge) => (
+                    <div key={badge.name} className="skill-badge">
+                      <i className={badge.icon}></i>
+                      <span>{badge.name}</span>
+                    </div>
                   ))}
                 </div>
-              </div>
-            </div>
-
-            {/* Right 4 Columns: Portrait & Architectural Field Dossier */}
-            <div className="flex flex-col justify-between lg:col-span-4">
-              <div className="rounded-xl border border-border bg-card p-5">
-                <div className="flex items-center justify-between border-b border-border pb-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                  <span>ENGINEER DOSSIER</span>
-                  <span className="text-primary">ID // SFS-23</span>
-                </div>
-
-                <div className="mt-4 overflow-hidden rounded-lg border border-border bg-secondary">
-                  <img
-                    src={PROFILE_DATA.avatar}
-                    alt={PROFILE_DATA.name}
-                    className="h-64 w-full object-cover object-top"
-                  />
-                </div>
-
-                <dl className="mt-5 divide-y divide-border font-mono text-xs">
-                  <div className="flex justify-between py-2.5">
-                    <dt className="text-muted-foreground">NAME</dt>
-                    <dd className="font-semibold text-foreground">
-                      {PROFILE_DATA.shortName}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between py-2.5">
-                    <dt className="text-muted-foreground">EDUCATION</dt>
-                    <dd className="text-foreground">{PROFILE_DATA.education}</dd>
-                  </div>
-                  <div className="flex justify-between py-2.5">
-                    <dt className="text-muted-foreground">BASE</dt>
-                    <dd className="text-foreground">{PROFILE_DATA.location}</dd>
-                  </div>
-                  <div className="flex justify-between py-2.5">
-                    <dt className="text-muted-foreground">CORE STACK</dt>
-                    <dd className="text-right text-foreground">
-                      React, TS, Unity C#, Node, PG
-                    </dd>
-                  </div>
-                  <div className="flex justify-between pt-2.5">
-                    <dt className="text-muted-foreground">CREDENTIAL</dt>
-                    <dd className="font-semibold text-[#d4a359]">
-                      Oracle Academy Java
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* =================================================================
-            01 // SELECTED WORKS (CASE STUDY SPREADS & COMPACT ARCHIVE)
-            (group-element-transitions, same-document-transitions, animate-element-entry-exit)
-           ================================================================= */}
-        <section
-          id="projects"
-          className="mx-auto max-w-7xl border-b border-border px-4 py-20 sm:px-6 lg:px-8"
-        >
-          {/* Section Header & Controls */}
-          <div className="flex flex-col justify-between gap-6 border-b border-border pb-8 lg:flex-row lg:items-end">
-            <div>
-              <div className="font-mono text-xs font-semibold uppercase tracking-widest text-primary">
-                01 // SELECTED ENGINEERING WORK
-              </div>
-              <h2
-                id="projects-grid-heading"
-                ref={projectsHeadingRef}
-                tabIndex={-1}
-                className="mt-2 font-display text-3xl font-extrabold tracking-tight outline-none sm:text-5xl"
-              >
-                Production Systems{" "}
-                <span className="font-serif-editorial italic font-normal text-muted-foreground">
-                  &amp; Case Studies
-                </span>
-              </h2>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              {/* Category Filter Tabs (View Transitions API) */}
-              <div
-                role="tablist"
-                aria-label="Filter works by domain"
-                className="inline-flex flex-wrap gap-1 rounded-lg border border-border bg-secondary/50 p-1"
-              >
-                {CATEGORY_TABS.map((tab) => {
-                  const active = activeCategory === tab.id
-                  return (
-                    <button
-                      key={tab.id}
-                      role="tab"
-                      type="button"
-                      aria-selected={active}
-                      onClick={() => handleCategoryChange(tab.id)}
-                      className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-all ${
-                        active
-                          ? "bg-primary text-primary-foreground font-semibold"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      <span>{tab.label}</span>
-                      <span className="opacity-75">[{tab.count}]</span>
-                    </button>
-                  )
-                })}
-              </div>
-
-              {/* View Mode Switcher */}
-              <div className="hidden items-center rounded-lg border border-border bg-secondary/50 p-1 sm:inline-flex">
-                <button
-                  type="button"
-                  onClick={() => setLayoutMode("editorial")}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 font-mono text-[11px] uppercase ${
-                    layoutMode === "editorial"
-                      ? "bg-card text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                  title="Editorial Case Study View"
-                >
-                  <ListFilter className="h-3.5 w-3.5" />
-                  <span>Spread</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setLayoutMode("compact")}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 font-mono text-[11px] uppercase ${
-                    layoutMode === "compact"
-                      ? "bg-card text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                  title="Compact 2-Column Grid"
-                >
-                  <Grid className="h-3.5 w-3.5" />
-                  <span>Grid</span>
-                </button>
-              </div>
-            </div>
+              </motion.div>
+            ))}
           </div>
 
-          {/* Projects List / Grid */}
+          {/* Subtle Pauseable Tech Ticker (motion guide) */}
           <div
-            className={
-              layoutMode === "editorial"
-                ? "divide-y divide-border"
-                : "mt-10 grid grid-cols-1 gap-8 lg:grid-cols-2"
-            }
+            style={{
+              marginTop: "36px",
+              padding: "16px 20px",
+              borderRadius: "var(--radius-md)",
+              background: "var(--bg-card)",
+              border: "1px solid var(--border)",
+            }}
           >
-            {filteredProjects.map((project, projIdx) => {
-              const currentImgIdx = cardImageIndex[project.id] ?? 0
-              const activeImage =
-                project.images[currentImgIdx] ?? project.images[0]
-              const isExpanded = Boolean(expandedCards[project.id])
-              const isEven = projIdx % 2 === 1
-
-              if (layoutMode === "compact") {
-                return (
-                  <Card
-                    key={project.id}
-                    style={{ viewTransitionName: project.vtName }}
-                    className="project-card-vt flex flex-col justify-between overflow-hidden p-6"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between font-mono text-xs text-muted-foreground">
-                        <span className="font-bold text-primary">
-                          {project.index} // {project.categoryLabel}
-                        </span>
-                        <span>{project.year}</span>
-                      </div>
-                      <h3 className="mt-2 font-display text-2xl font-bold">
-                        {project.title}
-                      </h3>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        {project.description}
-                      </p>
-                      <div className="mt-4 overflow-hidden rounded-lg border border-border bg-black">
-                        <img
-                          src={activeImage.src}
-                          alt={activeImage.caption}
-                          loading="lazy"
-                          onClick={() => openProjectModal(project, currentImgIdx)}
-                          className="aspect-video w-full cursor-pointer object-cover object-top transition-transform duration-500 hover:scale-[1.02]"
-                        />
-                      </div>
-                    </div>
-                    <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
-                      <div className="flex flex-wrap gap-1.5">
-                        {project.techStack.slice(0, 4).map((t) => (
-                          <Badge key={t} variant="secondary">
-                            {t}
-                          </Badge>
-                        ))}
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => openProjectModal(project, currentImgIdx)}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "10px",
+                fontSize: "0.75rem",
+                color: "var(--text-muted)",
+              }}
+            >
+              <span>ACTIVE TECH STACK</span>
+              <button
+                type="button"
+                onClick={() => setMarqueePaused((prev) => !prev)}
+                aria-pressed={marqueePaused}
+                style={{
+                  color: "var(--text-secondary)",
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <i
+                  className={marqueePaused ? "fas fa-play" : "fas fa-pause"}
+                ></i>
+                <span>{marqueePaused ? "Resume" : "Pause"}</span>
+              </button>
+            </div>
+            <div style={{ overflow: "hidden" }}>
+              <div
+                className="marquee-track"
+                data-paused={marqueePaused ? "true" : "false"}
+                style={{ gap: "24px" }}
+              >
+                {[...TECH_MARQUEE_ITEMS, ...TECH_MARQUEE_ITEMS].map(
+                  (item, i) => (
+                    <span
+                      key={`${item}-${i}`}
+                      style={{
+                        fontSize: "0.82rem",
+                        color: "var(--text-secondary)",
+                        fontWeight: 500,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: "var(--accent-orange)",
+                          marginRight: "8px",
+                        }}
                       >
-                        <span>Inspect</span>
-                        <ArrowUpRight className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  </Card>
-                )
-              }
+                        •
+                      </span>
+                      {item}
+                    </span>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
+      {/* ===================== PROJECTS SECTION ===================== */}
+      <section id="projects" className="projects section">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="section-header"
+          >
+            <span className="section-tag">My Work</span>
+            <h2
+              id="projects-grid-heading"
+              ref={projectsHeadingRef}
+              tabIndex={-1}
+              className="section-title"
+              style={{ outline: "none" }}
+            >
+              Featured Projects
+            </h2>
+            <p className="section-sub">
+              Real systems built to solve real problems — spanning Unity 2D
+              games, streaming platforms, Discord voice bots, and enterprise web
+              apps.
+            </p>
+          </motion.div>
+
+          {/* Category Filter Pills (View Transitions API) */}
+          <div
+            role="tablist"
+            aria-label="Filter projects by category"
+            className="project-filters"
+          >
+            {PROJECT_FILTERS.map((f) => (
+              <button
+                key={f.id}
+                role="tab"
+                type="button"
+                aria-selected={activeCategory === f.id}
+                onClick={() => handleFilterChange(f.id)}
+                className={`filter-btn ${
+                  activeCategory === f.id ? "active" : ""
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="projects-grid">
+            {filteredProjects.map((project) => {
+              const isExpanded = Boolean(expandedDetails[project.id])
               return (
                 <article
                   key={project.id}
                   style={{ viewTransitionName: project.vtName }}
-                  className="project-card-vt py-12 first:pt-10 last:pb-4"
+                  className="project-card"
                 >
-                  <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-10">
-                    {/* Narrative & Engineering Column (5 cols) */}
-                    <div
-                      className={`lg:col-span-5 ${
-                        isEven ? "lg:order-2" : "lg:order-1"
-                      }`}
-                    >
-                      <div className="flex flex-wrap items-center gap-2.5 font-mono text-xs">
-                        <span className="text-base font-bold text-primary">
-                          {project.index}
+                  {/* Top Image Preview */}
+                  <div
+                    className={`project-img-wrap ${
+                      project.previewType === "mobile" ? "mobile-wrap" : ""
+                    }`}
+                    onClick={() =>
+                      openImageViewer(
+                        project,
+                        project.images.length > 1 ? 1 : 0
+                      )
+                    }
+                  >
+                    {project.previewType === "duo" &&
+                    project.images.length >= 2 ? (
+                      <div className="project-img-duo">
+                        <img
+                          src={project.images[0].src}
+                          alt={project.images[0].caption}
+                          className="duo-img duo-back"
+                          loading="lazy"
+                        />
+                        <img
+                          src={project.images[1].src}
+                          alt={project.images[1].caption}
+                          className="duo-img duo-front"
+                          loading="lazy"
+                        />
+                      </div>
+                    ) : (
+                      <img
+                        src={project.images[0].src}
+                        alt={project.images[0].caption}
+                        className={`project-img ${
+                          project.previewType === "mobile" ? "mobile-img" : ""
+                        }`}
+                        loading="lazy"
+                      />
+                    )}
+
+                    <div className="project-overlay">
+                      <span className="overlay-label">
+                        <i className={project.overlayIcon}></i>{" "}
+                        {project.overlayLabel}
+                      </span>
+                    </div>
+                    <span className="project-num">{project.num}</span>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="project-body">
+                    <div className="project-tags">
+                      {project.tags.map((tag) => (
+                        <span key={tag} className="tag">
+                          {tag}
                         </span>
-                        <span className="text-muted-foreground">/</span>
-                        <Badge variant="default">{project.categoryLabel}</Badge>
-                        {project.isNew && (
-                          <Badge variant="brass">SHIPPED {project.year}</Badge>
-                        )}
-                        <span className="ml-auto font-mono text-xs text-muted-foreground">
-                          {project.role}
-                        </span>
-                      </div>
-
-                      <h3 className="mt-4 font-display text-2xl font-extrabold leading-tight tracking-tight sm:text-3xl">
-                        {project.title}
-                      </h3>
-                      <p className="mt-1.5 font-mono text-xs text-[#d4a359]">
-                        {project.subtitle}
-                      </p>
-
-                      <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
-                        {project.description}
-                      </p>
-
-                      {/* Architectural Telemetry Ledger */}
-                      <div className="mt-6 grid grid-cols-3 divide-x divide-border rounded-lg border border-border bg-card/60">
-                        {project.metrics.map((m) => (
-                          <div key={m.label} className="p-3">
-                            <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                              {m.label}
-                            </p>
-                            <p className="mt-1 font-mono text-xs font-semibold text-foreground">
-                              {m.value}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Tech Stack Chips */}
-                      <div className="mt-5 flex flex-wrap gap-1.5">
-                        {project.techStack.map((tech) => (
-                          <span
-                            key={tech}
-                            className="rounded border border-border bg-secondary/40 px-2.5 py-1 font-mono text-[11px] text-foreground/90"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Discrete Expandable Architecture Notes (animate-element-entry-exit) */}
-                      <div
-                        ref={(el) => {
-                          detailRefs.current[project.id] = el
-                        }}
-                        hidden
-                        className="project-details mt-5 rounded-lg border border-primary/35 bg-card p-4 text-xs leading-relaxed"
-                      >
-                        <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-primary">
-                          Architecture &amp; Implementation Notes
-                        </div>
-                        <p className="mt-1.5 text-muted-foreground">
-                          {project.architectureSummary}
-                        </p>
-                        <ul className="mt-3 space-y-1.5 text-foreground/90">
-                          {project.highlights.map((hl) => (
-                            <li key={hl} className="flex items-start gap-2">
-                              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                              <span>{hl}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="mt-6 flex flex-wrap items-center gap-3">
-                        <Button
-                          onClick={() => openProjectModal(project, currentImgIdx)}
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          <span>Case Study &amp; Fullscreen</span>
-                        </Button>
-
-                        <Button
-                          variant="outline"
-                          onClick={() => toggleCardArchitecture(project.id)}
-                          aria-expanded={isExpanded}
-                        >
-                          <ChevronDown
-                            className={`h-3.5 w-3.5 transition-transform duration-300 ${
-                              isExpanded ? "rotate-180 text-primary" : ""
-                            }`}
-                          />
-                          <span>
-                            {isExpanded
-                              ? "Hide Architecture"
-                              : "Architecture Notes"}
-                          </span>
-                        </Button>
-                      </div>
+                      ))}
                     </div>
 
-                    {/* Interactive Visual Stage Column (7 cols) */}
+                    <h3 className="project-title">{project.title}</h3>
+                    <p className="project-desc">{project.description}</p>
+
+                    <ul className="project-features">
+                      {project.features.map((feat) => (
+                        <li key={feat}>
+                          <i className="fas fa-check"></i> {feat}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="project-actions">
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        aria-expanded={isExpanded}
+                        onClick={() => toggleProjectDetails(project.id)}
+                      >
+                        <i
+                          className={
+                            isExpanded ? "fas fa-eye-slash" : "fas fa-eye"
+                          }
+                        ></i>{" "}
+                        {isExpanded ? "Hide Details" : "View Details"}
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        onClick={() =>
+                          openImageViewer(
+                            project,
+                            project.images.length > 1 ? 1 : 0
+                          )
+                        }
+                      >
+                        <i className="fas fa-expand"></i> Preview Screens
+                      </button>
+                    </div>
+
+                    {/* Discrete Expandable Details (animate-element-entry-exit) */}
                     <div
-                      className={`lg:col-span-7 ${
-                        isEven ? "lg:order-1" : "lg:order-2"
-                      }`}
+                      ref={(el) => {
+                        detailRefs.current[project.id] = el
+                      }}
+                      className="project-details"
+                      hidden
                     >
-                      <Card className="overflow-hidden border-border bg-card p-2 sm:p-3">
-                        <div className="relative overflow-hidden rounded-lg border border-border bg-[#0a0a09]">
-                          <img
-                            src={activeImage.src}
-                            alt={activeImage.caption}
-                            loading="lazy"
-                            onClick={() =>
-                              openProjectModal(project, currentImgIdx)
-                            }
-                            className="aspect-video w-full cursor-pointer object-cover object-top transition-transform duration-500 hover:scale-[1.01]"
-                          />
-                        </div>
-
-                        {/* Caption & Multi-Screen Switcher Bar */}
-                        <div className="mt-3 flex flex-col justify-between gap-3 px-1 sm:flex-row sm:items-center">
-                          <p className="font-mono text-[11px] text-muted-foreground">
-                            <span className="text-primary">FIG {project.index}.{currentImgIdx + 1}</span>{" "}
-                            — {activeImage.caption}
-                          </p>
-
-                          {project.images.length > 1 && (
-                            <div className="flex shrink-0 items-center gap-1.5">
-                              {project.images.map((img, idx) => (
-                                <button
-                                  key={img.src}
-                                  type="button"
-                                  onClick={() =>
-                                    setCardImageIndex((prev) => ({
-                                      ...prev,
-                                      [project.id]: idx,
-                                    }))
-                                  }
-                                  className={`rounded px-2.5 py-1 font-mono text-[11px] uppercase transition-colors ${
-                                    currentImgIdx === idx
-                                      ? "bg-primary text-primary-foreground font-semibold"
-                                      : "border border-border bg-secondary/60 text-muted-foreground hover:text-foreground"
-                                  }`}
-                                >
-                                  View 0{idx + 1}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </Card>
+                      <p>{project.detailText}</p>
+                      <span className="detail-note">{project.detailNote}</span>
                     </div>
                   </div>
                 </article>
               )
             })}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* =================================================================
-            02 // TECHNICAL LEDGER & SPECIFICATION MATRIX
-           ================================================================= */}
-        <section
-          id="skills"
-          className="mx-auto max-w-7xl border-b border-border px-4 py-20 sm:px-6 lg:px-8"
-        >
-          <div className="flex flex-col justify-between gap-6 border-b border-border pb-8 lg:flex-row lg:items-end">
-            <div>
-              <div className="font-mono text-xs font-semibold uppercase tracking-widest text-primary">
-                02 // TECHNICAL LEDGER
-              </div>
-              <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
-                Engineering Stack{" "}
-                <span className="font-serif-editorial italic font-normal text-muted-foreground">
-                  &amp; Capabilities
-                </span>
-              </h2>
-            </div>
-            <p className="max-w-md text-sm text-muted-foreground">
-              Every tool listed below is actively used in the production repositories
-              featured above—spanning web platforms, Unity 2D C# games, and voice bots.
+      {/* ===================== CERTIFICATE SECTION ===================== */}
+      <section id="certificate" className="certificate section">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="section-header"
+          >
+            <span className="section-tag">Achievements</span>
+            <h2 className="section-title">Certifications</h2>
+            <p className="section-sub">
+              Verified credentials that back up my technical knowledge.
             </p>
-          </div>
+          </motion.div>
 
-          {/* 4-Row Architectural Specification Table */}
-          <div className="divide-y divide-border">
-            {SKILL_DOMAINS.map((domain) => (
-              <div
-                key={domain.id}
-                className="grid grid-cols-1 gap-6 py-8 lg:grid-cols-12 lg:items-start"
-              >
-                <div className="lg:col-span-4">
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-mono text-xs font-bold text-primary">
-                      {domain.index} /
-                    </span>
-                    <h3 className="font-display text-xl font-bold">
-                      {domain.title}
-                    </h3>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55 }}
+            className="cert-wrapper"
+          >
+            <div className="cert-card">
+              <div className="cert-left">
+                <div className="cert-issuer">
+                  <div className="oracle-logo">
+                    <span className="oracle-text">ORACLE</span>
+                    <span className="academy-text">Academy</span>
                   </div>
-                  <p className="mt-2 font-mono text-[11px] text-[#d4a359]">
-                    Production: {domain.appliedIn}
-                  </p>
                 </div>
-
-                <div className="lg:col-span-4">
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {domain.summary}
-                  </p>
+                <div className="cert-badge-wrap">
+                  <div className="cert-badge-icon">
+                    <i className="fab fa-java"></i>
+                  </div>
+                  <div className="cert-glow"></div>
                 </div>
-
-                <div className="flex flex-wrap gap-2 lg:col-span-4">
-                  {domain.items.map((item) => (
-                    <span
-                      key={item}
-                      className="rounded-md border border-border bg-card px-3 py-1.5 font-mono text-xs font-medium text-foreground"
-                    >
-                      {item}
-                    </span>
-                  ))}
+                <div className="cert-meta">
+                  <span className="cert-type-label">Course Completion</span>
                 </div>
               </div>
-            ))}
-          </div>
 
-          {/* Accessible Specification Ticker Strip (motion guide) */}
-          <div className="mt-8 rounded-xl border border-border bg-card/50 p-4">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-                CONTINUOUS STACK INDEX
-              </span>
-              <button
-                type="button"
-                onClick={() => setMarqueePaused((prev) => !prev)}
-                aria-pressed={marqueePaused}
-                className="inline-flex items-center gap-1.5 rounded border border-border bg-background px-2.5 py-1 font-mono text-[11px] uppercase text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
-              >
-                {marqueePaused ? (
-                  <>
-                    <Play className="h-3 w-3 text-primary" />
-                    <span>Resume Ticker</span>
-                  </>
-                ) : (
-                  <>
-                    <Pause className="h-3 w-3 text-primary" />
-                    <span>Pause Ticker</span>
-                  </>
-                )}
-              </button>
-            </div>
+              <div className="cert-right">
+                <div className="cert-top-label">Award of Course Completion</div>
+                <h3 className="cert-name">Java Fundamentals</h3>
+                <p className="cert-recipient">
+                  Presented to <strong>{PROFILE_DATA.fullName}</strong>
+                </p>
+                <p className="cert-date">
+                  <i className="far fa-calendar-alt"></i> Completed: June 19,
+                  2024
+                </p>
+                <p className="cert-description">
+                  Awarded by Oracle Academy for the satisfactory completion of
+                  all coursework in Java Fundamentals. This certification
+                  demonstrates foundational programming knowledge including
+                  object-oriented principles, data structures, and core Java
+                  syntax.
+                </p>
 
-            <div className="overflow-hidden border-t border-border pt-3">
-              <div
-                className="marquee-track gap-6"
-                data-paused={marqueePaused ? "true" : "false"}
-              >
-                {[...TECH_MARQUEE_ITEMS, ...TECH_MARQUEE_ITEMS].map(
-                  (item, index) => (
-                    <div
-                      key={`${item}-${index}`}
-                      className="inline-flex items-center gap-3 font-mono text-xs text-muted-foreground"
-                    >
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                      <span className="text-foreground">{item}</span>
-                    </div>
-                  )
-                )}
+                <div className="cert-actions">
+                  <a
+                    href={PROFILE_DATA.certificatePdf}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary"
+                  >
+                    <i className="fas fa-eye"></i> View Certificate
+                  </a>
+                </div>
+
+                <div className="cert-verified">
+                  <i className="fas fa-shield-alt"></i>
+                  <span>Verified by Oracle Academy</span>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </motion.div>
+        </div>
+      </section>
 
-        {/* =================================================================
-            03 // CREDENTIALS & ACADEMIC CERTIFICATION
-           ================================================================= */}
-        <section
-          id="certificate"
-          className="mx-auto max-w-7xl border-b border-border px-4 py-20 sm:px-6 lg:px-8"
-        >
-          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
-            <div className="lg:col-span-8">
-              <div className="font-mono text-xs font-semibold uppercase tracking-widest text-primary">
-                03 // VERIFIED CREDENTIAL
-              </div>
-              <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-                {CERTIFICATE_DATA.title}
-              </h2>
-              <p className="mt-2 font-mono text-xs text-[#d4a359]">
-                ISSUED BY {CERTIFICATE_DATA.issuer.toUpperCase()} —{" "}
-                {CERTIFICATE_DATA.date.toUpperCase()}
-              </p>
-              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-                {CERTIFICATE_DATA.description}
+      {/* ===================== CONTACT SECTION ===================== */}
+      <section id="contact" className="contact section">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="section-header"
+          >
+            <span className="section-tag">Get In Touch</span>
+            <h2 className="section-title">Contact Me</h2>
+            <p className="section-sub">
+              Open to internship opportunities, collaborations, and
+              conversations about development.
+            </p>
+          </motion.div>
+
+          <div className="contact-grid">
+            {/* Contact Info */}
+            <div className="contact-info">
+              <h3 className="contact-info-title">Let&apos;s Connect</h3>
+              <p className="contact-info-sub">
+                Whether you have a project in mind, an internship offer, or just
+                want to say hi — my inbox is open.
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-2">
-                {CERTIFICATE_DATA.skillsVerified.map((skill) => (
-                  <Badge key={skill} variant="secondary">
-                    <Check className="h-3 w-3 text-[#4d9375]" />
-                    <span>{skill}</span>
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <div className="lg:col-span-4">
-              <Card className="p-6">
-                <div className="flex items-center justify-between border-b border-border pb-3 font-mono text-xs text-muted-foreground">
-                  <span>ORACLE ACADEMY</span>
-                  <Award className="h-4 w-4 text-[#d4a359]" />
-                </div>
-                <p className="mt-4 font-display text-lg font-bold">
-                  Official Certificate PDF
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Awarded to Steven Floyd Sendrijas upon completion of Java
-                  Fundamentals.
-                </p>
+              <div className="contact-items">
                 <a
-                  href={CERTIFICATE_DATA.pdfUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-5 block"
+                  href={`mailto:${PROFILE_DATA.email}`}
+                  className="contact-item"
                 >
-                  <Button className="w-full">
-                    <FileText className="h-4 w-4" />
-                    <span>Open Official Certificate</span>
-                    <ArrowUpRight className="h-4 w-4" />
-                  </Button>
+                  <div className="contact-icon">
+                    <i className="fas fa-envelope"></i>
+                  </div>
+                  <div className="contact-detail">
+                    <span className="contact-label">Email</span>
+                    <span className="contact-value">{PROFILE_DATA.email}</span>
+                  </div>
                 </a>
-              </Card>
+
+                <a href={`tel:${PROFILE_DATA.phone}`} className="contact-item">
+                  <div className="contact-icon">
+                    <i className="fas fa-phone"></i>
+                  </div>
+                  <div className="contact-detail">
+                    <span className="contact-label">Phone</span>
+                    <span className="contact-value">{PROFILE_DATA.phone}</span>
+                  </div>
+                </a>
+
+                <div className="contact-item">
+                  <div className="contact-icon">
+                    <i className="fas fa-map-marker-alt"></i>
+                  </div>
+                  <div className="contact-detail">
+                    <span className="contact-label">Location</span>
+                    <span className="contact-value">
+                      {PROFILE_DATA.location}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="contact-socials">
+                <a
+                  href={PROFILE_DATA.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-icon"
+                  aria-label="Facebook"
+                >
+                  <i className="fab fa-facebook-f"></i>
+                </a>
+                <a
+                  href={PROFILE_DATA.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-icon"
+                  aria-label="Instagram"
+                >
+                  <i className="fab fa-instagram"></i>
+                </a>
+                <a
+                  href={PROFILE_DATA.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-icon"
+                  aria-label="GitHub"
+                >
+                  <i className="fab fa-github"></i>
+                </a>
+              </div>
+            </div>
+
+            {/* Contact Form */}
+            <div className="contact-form-wrap">
+              {formSent ? (
+                <div className="form-success">
+                  <i className="fas fa-check-circle"></i>
+                  <h4>Message Sent!</h4>
+                  <p>
+                    Thank you for reaching out. I&apos;ll get back to you as soon
+                    as possible.
+                  </p>
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-sm"
+                    onClick={() => setFormSent(false)}
+                  >
+                    Send Another Message
+                  </button>
+                </div>
+              ) : (
+                <form className="contact-form" onSubmit={handleContactSubmit}>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="name">Full Name</label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Your full name"
+                        required
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData((p) => ({ ...p, name: e.target.value }))
+                        }
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="email">Email Address</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="your@email.com"
+                        required
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData((p) => ({ ...p, email: e.target.value }))
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="subject">Subject</label>
+                    <input
+                      type="text"
+                      id="subject"
+                      name="subject"
+                      placeholder="What is this about?"
+                      required
+                      value={formData.subject}
+                      onChange={(e) =>
+                        setFormData((p) => ({ ...p, subject: e.target.value }))
+                      }
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="message">Message</label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={5}
+                      placeholder="Tell me about your project or opportunity..."
+                      required
+                      value={formData.message}
+                      onChange={(e) =>
+                        setFormData((p) => ({ ...p, message: e.target.value }))
+                      }
+                    ></textarea>
+                  </div>
+                  <button type="submit" className="btn btn-primary btn-full">
+                    <i className="fas fa-paper-plane"></i> Send Message
+                  </button>
+                </form>
+              )}
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* =================================================================
-            04 // DIRECT CORRESPONDENCE & CONTACT
-           ================================================================= */}
-        <section
-          id="contact"
-          className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8"
-        >
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
-            {/* Left 5 Columns: Direct Channels */}
-            <div className="lg:col-span-5">
-              <div className="font-mono text-xs font-semibold uppercase tracking-widest text-primary">
-                04 // CORRESPONDENCE
-              </div>
-              <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-                Initiate a{" "}
-                <span className="font-serif-editorial italic font-normal text-primary">
-                  Conversation.
-                </span>
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Available for full-stack web development, Unity 2D game engineering,
-                and custom backend or bot architecture roles.
+      {/* ===================== FOOTER ===================== */}
+      <footer className="footer">
+        <div className="footer-container">
+          <div className="footer-top">
+            <div className="footer-brand">
+              <a href="#home" className="footer-logo">
+                <span className="logo-bracket">&lt;</span>SFS
+                <span className="logo-bracket">/&gt;</span>
+              </a>
+              <p className="footer-tagline">
+                {PROFILE_DATA.fullName}
+                <br />
+                IT Student — {PROFILE_DATA.school}
               </p>
+              <p className="footer-sub">
+                Full-Stack Web, Game &amp; Mobile Portfolio
+              </p>
+            </div>
 
-              <div className="mt-8 divide-y divide-border border-y border-border">
-                <div className="flex items-center justify-between py-4">
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-4 w-4 text-primary" />
-                    <div>
-                      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                        DIRECT EMAIL
-                      </p>
-                      <a
-                        href={`mailto:${PROFILE_DATA.email}`}
-                        className="font-mono text-sm font-semibold hover:text-primary"
-                      >
-                        {PROFILE_DATA.email}
-                      </a>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => copyToClipboard(PROFILE_DATA.email, "email")}
+            <div className="footer-links-col">
+              <h4>Navigation</h4>
+              <ul>
+                {NAV_LINKS.map((l) => (
+                  <li key={l.id}>
+                    <a href={`#${l.id}`}>{l.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="footer-links-col">
+              <h4>Contact</h4>
+              <ul>
+                <li>
+                  <a href={`mailto:${PROFILE_DATA.email}`}>
+                    <i className="fas fa-envelope"></i> {PROFILE_DATA.email}
+                  </a>
+                </li>
+                <li>
+                  <a href={`tel:${PROFILE_DATA.phone}`}>
+                    <i className="fas fa-phone"></i> {PROFILE_DATA.phone}
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="footer-links-col">
+              <h4>Connect</h4>
+              <ul>
+                <li>
+                  <a
+                    href={PROFILE_DATA.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    {copiedField === "email" ? (
-                      <>
-                        <Check className="h-3.5 w-3.5 text-[#4d9375]" />
-                        <span>Copied</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-3.5 w-3.5" />
-                        <span>Copy</span>
-                      </>
-                    )}
-                  </Button>
-                </div>
-
-                <div className="flex items-center justify-between py-4">
-                  <div className="flex items-center gap-3">
-                    <Phone className="h-4 w-4 text-primary" />
-                    <div>
-                      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                        PHONE / MOBILE
-                      </p>
-                      <a
-                        href={`tel:${PROFILE_DATA.phone.replace(/\s+/g, "")}`}
-                        className="font-mono text-sm font-semibold hover:text-primary"
-                      >
-                        {PROFILE_DATA.phone}
-                      </a>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => copyToClipboard(PROFILE_DATA.phone, "phone")}
+                    <i className="fab fa-facebook-f"></i> Facebook
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={PROFILE_DATA.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    {copiedField === "phone" ? (
-                      <>
-                        <Check className="h-3.5 w-3.5 text-[#4d9375]" />
-                        <span>Copied</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-3.5 w-3.5" />
-                        <span>Copy</span>
-                      </>
-                    )}
-                  </Button>
-                </div>
-
-                <div className="flex items-center justify-between py-4">
-                  <div className="flex items-center gap-3">
-                    <Github className="h-4 w-4 text-primary" />
-                    <div>
-                      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                        GITHUB REPOSITORIES
-                      </p>
-                      <a
-                        href={PROFILE_DATA.github}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="font-mono text-sm font-semibold hover:text-primary"
-                      >
-                        github.com/steven23lz
-                      </a>
-                    </div>
-                  </div>
+                    <i className="fab fa-instagram"></i> Instagram
+                  </a>
+                </li>
+                <li>
                   <a
                     href={PROFILE_DATA.github}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                   >
-                    <Button variant="outline" size="sm">
-                      <span>Profile</span>
-                      <ArrowUpRight className="h-3.5 w-3.5" />
-                    </Button>
+                    <i className="fab fa-github"></i> GitHub
                   </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Right 7 Columns: Message Form */}
-            <div className="lg:col-span-7">
-              <Card className="p-6 sm:p-8">
-                <div className="border-b border-border pb-4">
-                  <h3 className="font-display text-xl font-bold">
-                    Direct Dispatch
-                  </h3>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Composes a formatted inquiry directly to {PROFILE_DATA.email}.
-                  </p>
-                </div>
-
-                <form onSubmit={handleContactSubmit} className="mt-6 space-y-4">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                      <label
-                        htmlFor="contact-name"
-                        className="block font-mono text-[11px] uppercase tracking-wider text-muted-foreground"
-                      >
-                        Name
-                      </label>
-                      <input
-                        id="contact-name"
-                        type="text"
-                        required
-                        placeholder="Your name"
-                        value={contactForm.name}
-                        onChange={(e) =>
-                          setContactForm((prev) => ({
-                            ...prev,
-                            name: e.target.value,
-                          }))
-                        }
-                        className="mt-1.5 w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="contact-email"
-                        className="block font-mono text-[11px] uppercase tracking-wider text-muted-foreground"
-                      >
-                        Return Email
-                      </label>
-                      <input
-                        id="contact-email"
-                        type="email"
-                        required
-                        placeholder="name@company.com"
-                        value={contactForm.email}
-                        onChange={(e) =>
-                          setContactForm((prev) => ({
-                            ...prev,
-                            email: e.target.value,
-                          }))
-                        }
-                        className="mt-1.5 w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="contact-subject"
-                      className="block font-mono text-[11px] uppercase tracking-wider text-muted-foreground"
-                    >
-                      Subject / Role
-                    </label>
-                    <input
-                      id="contact-subject"
-                      type="text"
-                      required
-                      placeholder="Software Engineering / Project Inquiry"
-                      value={contactForm.subject}
-                      onChange={(e) =>
-                        setContactForm((prev) => ({
-                          ...prev,
-                          subject: e.target.value,
-                        }))
-                      }
-                      className="mt-1.5 w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="contact-message"
-                      className="block font-mono text-[11px] uppercase tracking-wider text-muted-foreground"
-                    >
-                      Brief
-                    </label>
-                    <textarea
-                      id="contact-message"
-                      rows={4}
-                      required
-                      placeholder="Outline your project scope, stack, or role details..."
-                      value={contactForm.message}
-                      onChange={(e) =>
-                        setContactForm((prev) => ({
-                          ...prev,
-                          message: e.target.value,
-                        }))
-                      }
-                      className="mt-1.5 w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between gap-4 pt-2">
-                    {formSubmitted ? (
-                      <span className="inline-flex items-center gap-1.5 font-mono text-xs text-[#4d9375]">
-                        <Check className="h-4 w-4" />
-                        Opening mail client...
-                      </span>
-                    ) : (
-                      <span className="font-mono text-[11px] text-muted-foreground">
-                        CEBU, PH (UTC+8)
-                      </span>
-                    )}
-
-                    <Button type="submit" size="lg">
-                      <Send className="h-3.5 w-3.5" />
-                      <span>Send Dispatch</span>
-                    </Button>
-                  </div>
-                </form>
-              </Card>
+                </li>
+              </ul>
             </div>
           </div>
-        </section>
-      </main>
 
-      {/* =================================================================
-          FOOTER
-         ================================================================= */}
-      <footer className="border-t border-border bg-card/40 py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 font-mono text-xs text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
-          <p>
-            © {new Date().getFullYear()} {PROFILE_DATA.name}. Engineered with
-            React 18, TypeScript, shadcn/ui &amp; Tailwind CSS.
-          </p>
-          <div className="flex items-center gap-6">
-            <a href="#home" className="hover:text-primary">
-              TOP ↑
-            </a>
-            <a
-              href={PROFILE_DATA.github}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-primary"
-            >
-              GITHUB ↗
-            </a>
+          <div className="footer-bottom">
+            <p>
+              &copy; {new Date().getFullYear()} {PROFILE_DATA.fullName}. All
+              rights reserved.
+            </p>
+            <p>
+              Built with{" "}
+              <i
+                className="fas fa-heart"
+                style={{ color: "var(--accent-red)" }}
+              ></i>{" "}
+              using React, TypeScript, shadcn/ui &amp; Framer Motion
+            </p>
           </div>
         </div>
       </footer>
 
-      {/* =================================================================
-          NATIVE TOP-LAYER CASE STUDY DIALOG MODAL
-          (light-dismiss-a-dialog + animate-to-from-top-layer)
-         ================================================================= */}
+      {/* Back to top button */}
+      <button
+        type="button"
+        className={`back-to-top ${showBackToTop ? "visible" : ""}`}
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="Back to top"
+      >
+        <i className="fas fa-arrow-up"></i>
+      </button>
+
+      {/* ===================== TOP-LAYER IMAGE VIEWER DIALOG ===================== */}
       <dialog
         ref={dialogRef}
         {...({
           closedby: "any",
         } as React.DialogHTMLAttributes<HTMLDialogElement>)}
-        aria-labelledby="case-study-modal-title"
-        className="case-study-dialog m-auto max-h-[90vh] w-[94vw] max-w-5xl overflow-y-auto rounded-xl border border-border bg-card p-0 text-card-foreground shadow-2xl outline-none"
+        aria-labelledby="image-viewer-caption"
+        className="case-study-dialog"
       >
-        {selectedProject && (
-          <div className="p-6 sm:p-8">
-            <div className="flex items-start justify-between gap-4 border-b border-border pb-4">
-              <div>
-                <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-                  <span className="font-bold text-primary">
-                    CASE STUDY // {selectedProject.index}
-                  </span>
-                  <span>•</span>
-                  <Badge variant="default">
-                    {selectedProject.categoryLabel}
-                  </Badge>
-                  <span className="text-muted-foreground">
-                    {selectedProject.year} — {selectedProject.role}
-                  </span>
-                </div>
-                <h3
-                  id="case-study-modal-title"
-                  className="mt-2 font-display text-2xl font-extrabold sm:text-3xl"
+        {viewerProject && (
+          <div className="image-viewer-panel">
+            <button
+              type="button"
+              className="image-viewer-close"
+              onClick={closeImageViewer}
+              aria-label="Close image preview"
+            >
+              <i className="fas fa-times"></i>
+            </button>
+
+            {viewerProject.images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  className="image-viewer-nav image-viewer-prev"
+                  onClick={() => stepViewerImage(-1)}
+                  aria-label="Previous screenshot"
                 >
-                  {selectedProject.title}
-                </h3>
-                <p className="mt-1 font-mono text-xs text-[#d4a359]">
-                  {selectedProject.subtitle}
-                </p>
-              </div>
+                  <i className="fas fa-chevron-left"></i>
+                </button>
+                <button
+                  type="button"
+                  className="image-viewer-nav image-viewer-next"
+                  onClick={() => stepViewerImage(1)}
+                  aria-label="Next screenshot"
+                >
+                  <i className="fas fa-chevron-right"></i>
+                </button>
+              </>
+            )}
 
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={closeProjectModal}
-                aria-label="Close case study modal"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {/* Interactive Screenshot Viewer */}
-            <div className="mt-6 overflow-hidden rounded-lg border border-border bg-[#080807]">
+            <div className="image-viewer-frame">
               <img
                 src={
                   (
-                    selectedProject.images[modalImageIdx] ??
-                    selectedProject.images[0]
+                    viewerProject.images[viewerIndex] ??
+                    viewerProject.images[0]
                   ).src
                 }
                 alt={
                   (
-                    selectedProject.images[modalImageIdx] ??
-                    selectedProject.images[0]
+                    viewerProject.images[viewerIndex] ??
+                    viewerProject.images[0]
                   ).caption
                 }
-                className="max-h-[480px] w-full object-contain"
+                className="image-viewer-img"
               />
-              <div className="flex flex-col items-start justify-between gap-3 border-t border-border bg-card px-4 py-3 sm:flex-row sm:items-center">
-                <p className="font-mono text-xs text-muted-foreground">
-                  {
-                    (
-                      selectedProject.images[modalImageIdx] ??
-                      selectedProject.images[0]
-                    ).caption
-                  }
-                </p>
-
-                {selectedProject.images.length > 1 && (
-                  <div className="flex shrink-0 items-center gap-2">
-                    {selectedProject.images.map((img, i) => (
-                      <button
-                        key={img.src}
-                        type="button"
-                        onClick={() => setModalImageIdx(i)}
-                        className={`rounded px-3 py-1 font-mono text-xs uppercase transition-colors ${
-                          modalImageIdx === i
-                            ? "bg-primary text-primary-foreground font-semibold"
-                            : "border border-border bg-secondary text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        Screen 0{i + 1}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
 
-            {/* Case Study Details */}
-            <div className="mt-6 grid grid-cols-1 gap-8 md:grid-cols-12">
-              <div className="space-y-5 md:col-span-8">
-                <div>
-                  <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
-                    01 / Problem &amp; System Scope
-                  </h4>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {selectedProject.description}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
-                    02 / Architecture &amp; Engineering
-                  </h4>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {selectedProject.architectureSummary}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
-                    03 / Key Technical Deliverables
-                  </h4>
-                  <ul className="mt-2.5 space-y-2 text-sm text-foreground/90">
-                    {selectedProject.highlights.map((item) => (
-                      <li key={item} className="flex items-start gap-2.5">
-                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="space-y-4 rounded-lg border border-border bg-secondary/30 p-5 md:col-span-4">
-                <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  System Telemetry
-                </h4>
-                <div className="divide-y divide-border border-y border-border">
-                  {selectedProject.metrics.map((m) => (
-                    <div key={m.label} className="py-2.5">
-                      <p className="font-mono text-[10px] uppercase text-muted-foreground">
-                        {m.label}
-                      </p>
-                      <p className="mt-0.5 font-mono text-sm font-bold text-foreground">
-                        {m.value}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="pt-2">
-                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                    Production Stack
-                  </p>
-                  <div className="mt-2.5 flex flex-wrap gap-1.5">
-                    {selectedProject.techStack.map((t) => (
-                      <span
-                        key={t}
-                        className="rounded border border-border bg-card px-2.5 py-1 font-mono text-[11px]"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end border-t border-border pt-4">
-              <Button variant="outline" onClick={closeProjectModal}>
-                Close Dossier (Esc)
-              </Button>
-            </div>
+            <p id="image-viewer-caption" className="image-viewer-caption">
+              {
+                (
+                  viewerProject.images[viewerIndex] ??
+                  viewerProject.images[0]
+                ).caption
+              }
+            </p>
           </div>
         )}
       </dialog>
-    </div>
+    </>
   )
 }
 
