@@ -4,51 +4,53 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 93%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 94%;
-    --muted-foreground: 215.4 16.3% 42%;
-    --accent: 262 83% 58%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 86%;
-    --input: 214.3 31.8% 86%;
-    --ring: 199 89% 48%;
-    --radius: 1rem;
+    /* Light Mode: Warm Archival Paper & Printer's Ink */
+    --background: 40 27% 95%;
+    --foreground: 40 8% 8%;
+    --card: 40 24% 97%;
+    --card-foreground: 40 8% 8%;
+    --popover: 40 24% 97%;
+    --popover-foreground: 40 8% 8%;
+    --primary: 12 72% 48%;
+    --primary-foreground: 40 27% 96%;
+    --secondary: 38 18% 89%;
+    --secondary-foreground: 40 8% 12%;
+    --muted: 38 16% 90%;
+    --muted-foreground: 36 8% 40%;
+    --accent: 36 58% 50%;
+    --accent-foreground: 40 8% 8%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 40 27% 96%;
+    --border: 36 14% 80%;
+    --input: 36 14% 80%;
+    --ring: 12 72% 48%;
+    --radius: 0.5rem;
     /* Disable the root view transition because we are only transitioning specific elements */
     view-transition-name: none;
   }
 
   .dark,
   [data-theme="dark"] {
-    --background: 224 45% 4%;
-    --foreground: 210 40% 98%;
-    --card: 223 39% 7%;
-    --card-foreground: 210 40% 98%;
-    --popover: 223 39% 7%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 192 91% 50%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 220 32% 12%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 220 32% 11%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 263 85% 66%;
-    --accent-foreground: 210 40% 98%;
+    /* Dark Mode: Warm Carbon Obsidian, Bone & Terracotta Ember */
+    --background: 40 5% 5%;
+    --foreground: 38 22% 93%;
+    --card: 40 5% 8%;
+    --card-foreground: 38 22% 93%;
+    --popover: 40 5% 8%;
+    --popover-foreground: 38 22% 93%;
+    --primary: 12 74% 55%;
+    --primary-foreground: 38 22% 96%;
+    --secondary: 36 6% 12%;
+    --secondary-foreground: 38 22% 93%;
+    --muted: 36 6% 12%;
+    --muted-foreground: 36 7% 58%;
+    --accent: 36 59% 59%;
+    --accent-foreground: 40 5% 6%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 218 28% 15%;
-    --input: 218 28% 15%;
-    --ring: 192 91% 50%;
+    --destructive-foreground: 38 22% 93%;
+    --border: 36 6% 16%;
+    --input: 36 6% 16%;
+    --ring: 12 74% 55%;
   }
 
   html {
@@ -69,6 +71,10 @@
     font-family: "Syne", sans-serif;
   }
 
+  .font-serif-editorial {
+    font-family: "Instrument Serif", Georgia, serif;
+  }
+
   code,
   pre,
   .font-mono {
@@ -84,13 +90,12 @@
   left: 0;
   top: 0;
   width: 100%;
-  height: 3px;
+  height: 2px;
   z-index: 9999;
-  background: linear-gradient(90deg, #06b6d4 0%, #8b5cf6 50%, #ec4899 100%);
+  background: linear-gradient(90deg, #e05a3a 0%, #d4a359 100%);
   transform-origin: 0 50%;
   transform: scaleX(0);
   pointer-events: none;
-  box-shadow: 0 0 14px rgba(6, 182, 212, 0.55);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -124,35 +129,33 @@
 }
 
 ::view-transition-group(.project-item) {
-  animation-duration: 0.45s;
+  animation-duration: 0.42s;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 ::view-transition-new(.project-item):only-child {
   animation-name: vt-card-enter;
-  animation-duration: 0.45s;
+  animation-duration: 0.42s;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 ::view-transition-old(.project-item):only-child {
   animation-name: vt-card-exit;
-  animation-duration: 0.32s;
+  animation-duration: 0.28s;
   animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
 }
 
 @keyframes vt-card-enter {
   from {
     opacity: 0;
-    translate: 0 28px;
-    scale: 0.94;
+    translate: 0 22px;
   }
 }
 
 @keyframes vt-card-exit {
   to {
     opacity: 0;
-    translate: 0 -20px;
-    scale: 0.94;
+    translate: 0 -16px;
   }
 }
 
@@ -172,22 +175,22 @@
   opacity: 1;
   translate: 0 0;
   transition:
-    display 0.35s,
-    opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    translate 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    display 0.32s,
+    opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.32s cubic-bezier(0.22, 1, 0.36, 1);
   transition-behavior: allow-discrete;
 }
 
 @starting-style {
   .project-details {
     opacity: 0;
-    translate: 0 -12px;
+    translate: 0 -10px;
   }
 }
 
 .project-details:where([hidden], [data-closing]) {
   opacity: 0;
-  translate: 0 -12px;
+  translate: 0 -10px;
 }
 
 .project-details[hidden] {
@@ -216,18 +219,18 @@
    ========================================================================== */
 dialog.case-study-dialog {
   opacity: 0;
-  transform: scale(0.94) translateY(12px);
+  transform: scale(0.96) translateY(10px);
   transition-property: opacity, transform, display, overlay;
-  transition-duration: 0.28s;
+  transition-duration: 0.26s;
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   transition-behavior: allow-discrete;
 }
 
 dialog.case-study-dialog::backdrop {
-  background-color: rgb(2 6 23 / 0);
+  background-color: rgb(10 10 9 / 0);
   backdrop-filter: blur(0px);
   transition-property: background-color, backdrop-filter, display, overlay;
-  transition-duration: 0.28s;
+  transition-duration: 0.26s;
   transition-timing-function: ease-out;
   transition-behavior: allow-discrete;
 }
@@ -238,15 +241,15 @@ dialog.case-study-dialog::backdrop {
 
   @starting-style {
     opacity: 0;
-    transform: scale(0.94) translateY(12px);
+    transform: scale(0.96) translateY(10px);
   }
 
   &::backdrop {
-    background-color: rgb(2 6 23 / 0.78);
-    backdrop-filter: blur(10px);
+    background-color: rgb(10 10 9 / 0.82);
+    backdrop-filter: blur(8px);
 
     @starting-style {
-      background-color: rgb(2 6 23 / 0);
+      background-color: rgb(10 10 9 / 0);
       backdrop-filter: blur(0px);
     }
   }
@@ -266,7 +269,7 @@ dialog.case-study-dialog::backdrop {
 }
 
 /* ==========================================================================
-   5. Infinite Tech Marquee & Interactive Card Glow (motion)
+   5. Infinite Tech Marquee & Warm Spotlight Card (motion)
    ========================================================================== */
 @keyframes marquee-scroll {
   from {
@@ -280,7 +283,7 @@ dialog.case-study-dialog::backdrop {
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee-scroll 38s linear infinite;
+  animation: marquee-scroll 42s linear infinite;
 
   @media (prefers-reduced-motion: reduce) {
     animation-duration: 120s;
@@ -303,9 +306,9 @@ dialog.case-study-dialog::backdrop {
   position: absolute;
   inset: 0;
   background: radial-gradient(
-    550px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(6, 182, 212, 0.13),
-    rgba(139, 92, 246, 0.05) 40%,
+    520px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(224, 90, 58, 0.08),
+    rgba(212, 163, 89, 0.03) 45%,
     transparent 75%
   );
   opacity: 0;

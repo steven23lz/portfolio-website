@@ -2,6 +2,7 @@ export type ProjectCategory = "all" | "web" | "games" | "bots"
 
 export interface ProjectItem {
   id: string
+  index: string
   vtName: string
   title: string
   shortTitle: string
@@ -18,76 +19,113 @@ export interface ProjectItem {
   metrics: { label: string; value: string }[]
   techStack: string[]
   images: { src: string; caption: string }[]
-  accentColor: string
-  repoHint?: string
 }
 
-export interface SkillGroup {
+export interface SkillDomain {
+  index: string
   id: string
   title: string
-  subtitle: string
-  iconName: string
-  accent: string
-  skills: { name: string; level: string }[]
+  summary: string
+  appliedIn: string
+  items: string[]
 }
 
 export const PROFILE_DATA = {
-  name: "Steven Floyd Sendrijas",
-  handle: "@steven23lz",
-  title: "Full-Stack Developer & Game Engineer",
-  roles: [
-    "Full-Stack Web Developer",
-    "Unity 2D Game Developer",
-    "React & TypeScript Engineer",
-    "Backend & Database Architect",
-    "Discord Bot & Audio Systems Builder",
-  ],
+  name: "Steven Floyd F. Sendrijas",
+  shortName: "Steven Sendrijas",
+  handle: "steven23lz",
+  title: "Full-Stack Software & Unity Game Engineer",
   location: "Cebu, Philippines",
+  timezone: "UTC+08:00",
   education: "BS in Information Technology",
-  bio: "I architect and build full-stack web platforms, interactive Unity 2D games, and real-time backend systems. From automated HLS media streaming engines and low-latency Discord Opus voice bots to 1,449-question educational RPGs and clinical platforms, I focus on resilient architecture, fluid motion, and polished user experiences.",
+  summary:
+    "I design and build full-stack web applications, 2D RPG systems in Unity 6, and real-time voice bots. My work spans programmatic C# game scenes, multi-tier HLS media streaming proxies, low-latency 48kHz Opus audio pipelines, and relational clinical & municipal systems.",
   email: "sendrijassteven@gmail.com",
   phone: "+63 991 204 3889",
   github: "https://github.com/steven23lz",
-  linkedin: "https://www.linkedin.com/",
-  facebook: "https://www.facebook.com/",
   avatar: "/assets/graduate.jpg",
   certificatePdf: "/assets/certificate.pdf",
 }
 
-export const HERO_STATS = [
-  { value: "6+", label: "Production Systems & Games", detail: "Web, Mobile, Unity & Bots" },
-  { value: "1,449+", label: "RPG Trivia Questions", detail: "Across 6 Academic Subjects" },
-  { value: "15+", label: "Core Technologies", detail: "React, TS, Unity C#, Node, Laravel" },
-  { value: "100%", label: "End-to-End Ownership", detail: "UI/UX, APIs, DB & Deployment" },
-]
-
 export const PROJECTS_DATA: ProjectItem[] = [
   {
+    id: "spotibai-discord-bot",
+    index: "01",
+    vtName: "project-spotibai-bot",
+    title: "SpotiBAI — Discord Voice DJ, Bulk Music Engine & Bisaya AI",
+    shortTitle: "SpotiBAI Discord Bot",
+    subtitle: "TypeScript 5.7 • Discord.js v14 • @discordjs/voice • BadiBrain AI • Prisma",
+    category: "bots",
+    categoryLabel: "Voice & AI Systems",
+    featured: true,
+    isNew: true,
+    year: "2026",
+    role: "Creator & Systems Architect",
+    description:
+      "Production Discord music and conversational AI bot (SpotiBAI#0456) built for active gaming communities. Combines a Jockie-style multi-track bulk query parser (!p / /play), a real-time FFmpeg 48kHz Opus DSP filter engine, and 'Badi'—a context-aware Bisaya/Bislish AI companion with server memory and natural-language DJ control.",
+    architectureSummary:
+      "Architected around per-guild isolated voice sessions (GuildMusicSession), an FFmpeg AudioFilterEngine supporting live DSP presets (Club Master Remixer, Slowed + Reverb, Nightcore, 8D Binaural), a zero-interruption TTS guard that never cuts off active music, an MCP server (discordMcpServer.ts), and PostgreSQL + Prisma ORM playlist persistence.",
+    highlights: [
+      "BadiBrain natural-language Bisaya/Bislish engine (!badi) with pronoun history resolution, server-scoped memory, and voice channel commands",
+      "BulkParser supporting comma and standalone 'e' delimiters with boundary protection for artist/song titles and 3-way concurrent resolution",
+      "Real-time FFmpeg AudioFilterEngine (dj_club, slowed_reverb, nightcore, 8d, vaporwave, bassboost) + Live Web DJ Controller dashboard",
+      "11 dynamic server color themes (ThemeManager) including Adaptive Smart DJ mode and lrclib.net synchronized lyrics",
+    ],
+    metrics: [
+      { label: "Voice Engine", value: "48kHz Opus + FFmpeg DSP" },
+      { label: "AI & NLP", value: "BadiBrain Bisaya Context" },
+      { label: "Persistence", value: "PostgreSQL + Prisma ORM" },
+    ],
+    techStack: [
+      "TypeScript 5.7",
+      "Discord.js v14",
+      "@discordjs/voice",
+      "FFmpeg DSP Filters",
+      "BadiBrain AI",
+      "PostgreSQL",
+      "Prisma ORM",
+      "Model Context Protocol",
+    ],
+    images: [
+      {
+        src: "/assets/discord-bot.png",
+        caption:
+          "SpotiBAI Live in Discord (#Dota Pisot / Mga Bushit) — Active voice session with Haruto, track skip/timeout handling, and !p cure queue embed",
+      },
+      {
+        src: "/assets/discord-dashboard.png",
+        caption:
+          "SpotiBAI Live Web DJ Controller & FFmpeg AudioFilterEngine — Club Master Remixer DSP pipeline and Adaptive Theme Engine",
+      },
+    ],
+  },
+  {
     id: "trivia-attack",
+    index: "02",
     vtName: "project-trivia-attack",
-    title: "Trivia Attack — 2D Educational Trivia RPG",
+    title: "Trivia Attack — 2D Educational Turn-Based RPG",
     shortTitle: "Trivia Attack RPG",
-    subtitle: "Turn-Based Pixel-Art Trivia RPG in Unity 6.5 (URP 2D)",
+    subtitle: "Unity 6.5 (URP 2D) • C# • Programmatic Scene Builders • 1,449 Questions",
     category: "games",
     categoryLabel: "Unity 2D Game",
     featured: true,
     isNew: true,
     year: "2026",
-    role: "Lead Game Developer & Systems Architect",
+    role: "Lead Game Developer",
     description:
-      "A turn-based pixel-art educational RPG built in Unity 6.5 (URP 2D) and C# where players battle through 5 academic worlds—from Elementary Gardens to Doctorate Dimensions—by answering timed trivia across 6 subjects with combo multipliers and 18 tiered power-ups.",
+      "A turn-based pixel-art educational RPG built in Unity 6.5 (URP 2D) and C#. Players guide Quill from Elementary school through Doctorate graduation across 5 worlds, battling monsters and bosses by answering timed questions across 6 academic subjects with speed multipliers and 18 tiered power-ups.",
     architectureSummary:
-      "Engineered entirely with programmatic C# scene builders (BattleSceneBuilder, MainMenuBuilder, WorldSelectBuilder, GraduationBuilder) and a custom frame-accurate SpriteAnimator driving 8-frame horizontal sprite sheets (Idle, Attack, Hurt, Victory, Defeat). Includes a procedural chiptune WAV synthesizer and 9-sliced pixel UI.",
+      "Built entirely through deterministic C# Editor scene builders (BattleSceneBuilder, MainMenuBuilder, WorldSelectBuilder, GraduationBuilder) rather than brittle manual prefabs. Features a custom frame-accurate SpriteAnimator driving 8-frame character state machines (Idle, Attack, Hurt, Victory, Defeat) and a procedural WAV chiptune synthesizer.",
     highlights: [
-      "1,449 verified trivia questions across Math, Science, History, English, Geography, and General Knowledge with Easy/Medium/Hard tiers",
-      "5 distinct academic worlds culminating in K-12, Bachelor's, Master's, and Doctorate graduation ceremonies with custom gown evolutions",
-      "5 playable modes: Adventure Campaign, Subject Practice, 60s Time Attack, 1-HP Survival, and 5-Boss Rush Gauntlet",
-      "18 collectible power-ups across 4 rarity tiers (50/50, Freeze Timer, Double Damage, Second Chance, Phoenix Feather, Scholar's Crown) & 22 Honours achievements",
+      "1,449 verified trivia questions across Math, Science, History, English, Geography, and General Knowledge with Easy/Medium/Hard difficulty scaling",
+      "5 academic worlds culminating in K-12, Bachelor's, Master's, and Doctorate graduation ceremonies that evolve Quill's academic regalia",
+      "5 game modes: Adventure Campaign, Subject Practice, 60-Second Time Attack, 1-HP Survival, and 5-Boss Rush Gauntlet",
+      "18 collectible power-ups across 4 rarity tiers (50/50, Freeze Timer, Double Damage, Phoenix Feather, Scholar's Crown) and 22 Honours badges",
     ],
     metrics: [
-      { label: "Question Bank", value: "1,449 Questions" },
-      { label: "Game Content", value: "5 Worlds / 5 Modes" },
-      { label: "Collectibles", value: "18 Power-Ups / 22 Badges" },
+      { label: "Question Bank", value: "1,449 Across 6 Subjects" },
+      { label: "Progression", value: "5 Worlds & 4 Degrees" },
+      { label: "Systems", value: "18 Power-Ups / 22 Badges" },
     ],
     techStack: [
       "Unity 6.5 (URP 2D)",
@@ -102,42 +140,42 @@ export const PROJECTS_DATA: ProjectItem[] = [
       {
         src: "/assets/trivia-battle.png",
         caption:
-          "World 4 Globe Garden Boss Encounter — Quill vs. Boss Globulous with speed-bonus timer, combo meter, and 3 equipped power-ups",
+          "World 4 Globe Garden Boss Battle — Quill vs. Boss Globulous with speed-bonus multiplier, 9-slice answer cards, and tiered power-ups",
       },
       {
         src: "/assets/trivia-menu.png",
         caption:
-          "Main Menu Campus — Doctorate Quill showcase, 6 game mode cards, and 22/22 Honours completion tracker",
+          "Main Menu Campus — Doctorate Quill character showcase, 6 mode cards, and 22/22 Honours badge tracker",
       },
     ],
-    accentColor: "from-amber-500/20 via-orange-500/15 to-cyan-500/20",
   },
   {
     id: "overview-streaming",
+    index: "03",
     vtName: "project-overview-streaming",
-    title: "OverView — Movie, TV & Anime Streaming Platform",
+    title: "OverView — Movie, TV Series & Anime Streaming Platform",
     shortTitle: "OverView Streaming",
-    subtitle: "Full-Stack Media Discovery & Automated HLS Playback Engine",
+    subtitle: "React 18 • TypeScript • Node.js & Express • PostgreSQL • HLS.js",
     category: "web",
-    categoryLabel: "Web Platform",
+    categoryLabel: "Full-Stack Web",
     featured: true,
     isNew: true,
     year: "2026",
-    role: "Full-Stack Architect & Developer",
+    role: "Full-Stack Architect",
     description:
-      "A full-stack entertainment discovery and streaming platform unifying Movies, TV Series, and Anime into a single cinema-grade interface with an Automated Video-Source Discovery Engine, multi-server failover, and real-time watch history.",
+      "A unified entertainment discovery and streaming platform for Movies, TV Series, and Anime featuring an Automated Video-Source Discovery Engine that resolves native 1080p HLS (.m3u8) streams, proxies CORS-restricted manifests, and automatically fails over to multi-server embed providers.",
     architectureSummary:
-      "Built with React 18, TypeScript, Node.js/Express, and PostgreSQL. The backend stream resolver probes Consumet & TMDB metadata, validates native HLS (.m3u8) manifests with custom Referer headers through a server-side CORS proxy, and automatically fails over across VidSrc, VidLink, and SuperEmbed providers.",
+      "Decoupled React 18 + TypeScript SPA and Node.js/Express REST API backed by PostgreSQL. Integrates TMDB and Consumet metadata providers, JWT authentication with bcrypt hashing, persistent watch history with episode resume timestamps, and automated Vitest + Playwright E2E test suites.",
     highlights: [
-      "3-tier Automated Video-Source Discovery Engine: native HLS.js 1080p stream -> backend CORS stream proxy -> multi-server embed failover",
-      "Unified catalog spanning Trending Movies, Popular TV Series (season/episode selector), and sub/dub Anime episodes",
-      "JWT authentication with bcrypt password hashing, persistent Watchlist, and automatic episode resume timestamp syncing",
-      "Comprehensive automated verification suite using Vitest + Supertest for API integration and Playwright for E2E browser testing",
+      "3-tier Automated Video-Source Discovery Engine: native HLS.js playback -> server-side CORS stream proxy -> multi-provider embed failover (VidSrc, VidLink, SuperEmbed)",
+      "Unified media catalog across Trending Movies, multi-season TV Series, and sub/dub Anime episodes with real-time search",
+      "Authenticated user accounts with PostgreSQL Watchlist management and automatic episode timestamp synchronization",
+      "Verified with Vitest + Supertest API integration tests and Playwright headless Chromium end-to-end checks",
     ],
     metrics: [
-      { label: "Stream Engine", value: "3-Tier Auto Failover" },
+      { label: "Stream Resolver", value: "3-Tier Auto Failover" },
       { label: "Playback", value: "HLS.js 1080p + Proxy" },
-      { label: "Persistence", value: "PostgreSQL + JWT" },
+      { label: "Storage", value: "PostgreSQL + JWT Auth" },
     ],
     techStack: [
       "React 18",
@@ -154,242 +192,210 @@ export const PROJECTS_DATA: ProjectItem[] = [
       {
         src: "/assets/overview-home.png",
         caption:
-          "OverView Discovery Catalog — Featured hero banner, category tabs (Movies, TV Shows, Anime), and live ratings",
+          "OverView Discovery Interface — Featured spotlight banner, unified Movies/TV/Anime catalog, and live ratings",
       },
       {
         src: "/assets/overview-player.png",
         caption:
-          "Universal HLS Video Player — Automated Stream Discovery Engine active with 1080p HLS source selector and episode sidebar",
+          "Universal HLS Video Player — Automated Stream Discovery Engine active with 1080p source selector and episode list",
       },
     ],
-    accentColor: "from-cyan-500/25 via-sky-500/15 to-violet-500/20",
-  },
-  {
-    id: "discord-music-bot",
-    vtName: "project-discord-music-bot",
-    title: "Jockie-Style Discord Music Bot",
-    shortTitle: "Discord Music Bot",
-    subtitle: "Multi-Track Bulk Query Parser & Low-Latency Opus Voice Engine",
-    category: "bots",
-    categoryLabel: "Bots & Audio",
-    featured: true,
-    isNew: true,
-    year: "2026",
-    role: "Backend & Systems Developer",
-    description:
-      "A high-performance Discord music bot built with TypeScript 5.7, Discord.js v14, and @discordjs/voice featuring a Jockie-inspired bulk song parser that queues multiple tracks in a single command using 'e' or comma delimiters.",
-    architectureSummary:
-      "Combines @discordjs/voice Opus 48kHz audio pipelines (yt-dlp + FFmpeg + prism-media) with per-guild QueueManager state machines, interactive Discord button collectors, and PostgreSQL + Prisma ORM for persistent user playlists and server configurations.",
-    highlights: [
-      "Custom bulk query parser supporting both 'e' separator and comma-separated song lists (e.g., `/play query: Blinding Lights e Starboy, The Hills`)",
-      "Low-latency 48kHz Opus voice streaming via @discordjs/voice, play-dl, and yt-dlp with automatic stream recovery",
-      "Rich interactive Now Playing embeds with live graphical progress bars, Pause/Skip/Loop/Shuffle/Stop buttons, and queue pagination",
-      "PostgreSQL + Prisma ORM persistence storing custom user playlists, guild prefixes, DJ roles, and 24/7 voice channel settings",
-    ],
-    metrics: [
-      { label: "Query Engine", value: "Bulk 'e' & CSV Parser" },
-      { label: "Audio Pipeline", value: "48kHz Opus Stream" },
-      { label: "Database", value: "PostgreSQL + Prisma" },
-    ],
-    techStack: [
-      "TypeScript 5.7",
-      "Discord.js v14",
-      "@discordjs/voice",
-      "PostgreSQL",
-      "Prisma ORM",
-      "yt-dlp & FFmpeg",
-      "Docker",
-      "Vitest",
-    ],
-    images: [
-      {
-        src: "/assets/discord-bot.png",
-        caption:
-          "Discord #music-commands Showcase — Bulk `/play` command parsing 4 songs simultaneously with interactive Now Playing controls",
-      },
-    ],
-    accentColor: "from-indigo-500/25 via-violet-500/15 to-purple-500/20",
   },
   {
     id: "clinic-management",
+    index: "04",
     vtName: "project-clinic-management",
     title: "Enlogada Ultrasound & Diagnostic Clinic System",
-    shortTitle: "Clinic Management System",
-    subtitle: "Patient Records, Diagnostic Triage & Scheduling Platform",
+    shortTitle: "Enlogada Clinic System",
+    subtitle: "Laravel • React • PostgreSQL • Role-Based Clinical Workflow",
     category: "web",
-    categoryLabel: "Web Platform",
+    categoryLabel: "Healthcare Web",
     featured: false,
     year: "2025",
-    role: "Full-Stack Web Developer",
+    role: "Full-Stack Developer",
     description:
-      "A comprehensive clinical management platform custom-built for Enlogada Ultrasound & Diagnostic Clinic to digitize patient intake, ultrasound diagnostic reporting, appointment scheduling, and multi-role staff operations.",
+      "A clinical operations and patient records platform built for Enlogada Ultrasound & Diagnostic Clinic to manage patient intake, appointment triage, ultrasound diagnostic reporting, and multi-role staff permissions.",
     architectureSummary:
-      "Architected with a Laravel backend API, PostgreSQL relational database, and a responsive React + Tailwind CSS dashboard enforcing strict role-based access control for doctors, sonographers, and front-desk staff.",
+      "Constructed with a Laravel API backend, PostgreSQL relational database, and a React + Tailwind CSS clinical dashboard enforcing role-based access control for physicians, sonographers, and reception staff.",
     highlights: [
-      "Centralized digital patient chart histories with searchable ultrasound imaging findings and printable diagnostic PDFs",
-      "Real-time appointment queue and triage status tracking reducing front-desk wait times",
-      "Role-based authentication and audit logging for clinicians, receptionists, and administrators",
+      "Digital patient records with searchable diagnostic history and structured ultrasound report templates",
+      "Live appointment scheduling and front-desk triage queue to minimize patient wait times",
+      "Role-based access control (RBAC) separating administrative, clinical, and reception workflows",
     ],
     metrics: [
-      { label: "Client", value: "Enlogada Clinic" },
-      { label: "Architecture", value: "Laravel + React" },
-      { label: "Database", value: "PostgreSQL RBAC" },
+      { label: "Organization", value: "Enlogada Clinic" },
+      { label: "Stack", value: "Laravel + React" },
+      { label: "Security", value: "PostgreSQL RBAC" },
     ],
     techStack: [
       "Laravel",
       "React",
       "PostgreSQL",
       "Tailwind CSS",
-      "RESTful API",
+      "REST API",
       "Role-Based Auth",
     ],
     images: [
       {
         src: "/assets/Patient.png",
-        caption: "Clinic Patient Management Dashboard — Patient records, diagnostic queue, and history lookup",
+        caption:
+          "Patient Records & Triage Dashboard — Clinical history lookup and appointment workflow",
       },
       {
         src: "/assets/Login.png",
-        caption: "Enlogada Ultrasound & Diagnostic Clinic Portal — Secure staff authentication interface",
+        caption:
+          "Enlogada Ultrasound & Diagnostic Clinic Portal — Role-based staff sign-in",
       },
     ],
-    accentColor: "from-emerald-500/20 via-teal-500/15 to-cyan-500/20",
   },
   {
     id: "cinebai-mobile",
+    index: "05",
     vtName: "project-cinebai-mobile",
-    title: "CineBai — Mobile Cinema Ticketing App",
-    shortTitle: "CineBai Ticketing App",
-    subtitle: "Cross-Platform Mobile Seat Reservation & E-Ticket Experience",
+    title: "CineBai — Mobile Cinema Seat Reservation App",
+    shortTitle: "CineBai Mobile App",
+    subtitle: "React Native • Node.js & Express • PostgreSQL • Mobile Ticketing",
     category: "games",
     categoryLabel: "Mobile App",
     featured: false,
     year: "2025",
     role: "Mobile & Backend Developer",
     description:
-      "A sleek cross-platform mobile cinema ticketing application allowing moviegoers to explore now-showing films, inspect real-time auditorium seat layouts, reserve seats, and generate instant QR e-tickets.",
+      "Cross-platform mobile cinema booking application enabling moviegoers to browse screenings, inspect interactive auditorium seat maps in real time, lock seat selections, and generate digital QR tickets.",
     architectureSummary:
-      "Developed using React Native for fluid iOS/Android interfaces paired with a Node.js, Express, and PostgreSQL backend that prevents double-booking through transactional seat locking.",
+      "Built with React Native for iOS/Android clients communicating with a Node.js, Express, and PostgreSQL backend that uses transactional row locking to prevent concurrent double-bookings.",
     highlights: [
-      "Interactive theater seat matrix with real-time availability states (Available, Selected, Reserved)",
-      "Transactional seat reservation workflow backed by PostgreSQL to eliminate race-condition double bookings",
-      "Streamlined movie discovery feed with showtime filtering, cinema hall selection, and digital ticket wallet",
+      "Interactive theater seat matrix displaying real-time seat states (Available, Selected, Reserved)",
+      "ACID transactional seat reservation pipeline in PostgreSQL preventing race-condition double bookings",
+      "Showtime filtering by cinema hall, date, and format with instant digital ticket generation",
     ],
     metrics: [
-      { label: "Platform", value: "React Native" },
-      { label: "Backend", value: "Node.js + Express" },
-      { label: "Concurrency", value: "ACID Seat Locking" },
+      { label: "Client", value: "React Native" },
+      { label: "API", value: "Node.js + Express" },
+      { label: "Booking", value: "Transactional Seat Lock" },
     ],
     techStack: [
       "React Native",
       "Node.js",
       "Express",
       "PostgreSQL",
-      "Mobile UI/UX",
+      "Mobile UI",
       "REST API",
     ],
     images: [
       {
         src: "/assets/mobilee.png",
-        caption: "CineBai Mobile Screens — Movie catalog, showtime picker, interactive seat matrix, and checkout",
+        caption:
+          "CineBai Mobile Screens — Now Showing catalog, showtime selector, interactive seat map, and e-ticket summary",
       },
     ],
-    accentColor: "from-rose-500/20 via-pink-500/15 to-amber-500/20",
   },
   {
     id: "business-permit",
+    index: "06",
     vtName: "project-business-permit",
-    title: "Municipal Business Permit & Licensing System",
-    shortTitle: "Business Permit System",
-    subtitle: "E-Governance Permit Processing & Automated Compliance Portal",
+    title: "Municipal Business Permit & Licensing Portal",
+    shortTitle: "Business Permit Portal",
+    subtitle: "PHP • Laravel • MySQL • Blade • E-Governance Workflow",
     category: "web",
-    categoryLabel: "Web Platform",
+    categoryLabel: "E-Governance Web",
     featured: false,
     year: "2024",
     role: "Full-Stack Developer",
     description:
-      "An automated municipal business permit and licensing web system that streamlines new business registrations, permit renewals, document verification, and fee assessments for local government workflows.",
+      "An e-governance web portal that digitizes municipal business permit applications, renewals, document verification, and automated regulatory fee assessments for local government licensing offices.",
     architectureSummary:
-      "Built on PHP and Laravel with a normalized MySQL schema and Blade templates, implementing multi-stage approval pipelines and automated regulatory fee computation.",
+      "Developed on PHP and Laravel with a normalized MySQL database and Blade templates, implementing multi-step municipal approval queues and audit trail logging.",
     highlights: [
-      "End-to-end digital application pipeline for new business registrations and annual permit renewals",
-      "Automated computation of municipal fees, surcharges, and clearance requirements",
-      "Real-time application status tracking and administrative approval dashboard with printable permit certificates",
+      "Digital application and renewal workflow replacing manual paper-based municipal routing",
+      "Automated computation of business tax brackets, regulatory fees, and clearance requirements",
+      "Administrative review dashboard with real-time status tracking and printable permit certificates",
     ],
     metrics: [
-      { label: "Domain", value: "E-Governance" },
-      { label: "Framework", value: "Laravel + PHP" },
+      { label: "Sector", value: "Municipal Licensing" },
+      { label: "Backend", value: "PHP + Laravel" },
       { label: "Database", value: "MySQL Relational" },
     ],
     techStack: ["PHP", "Laravel", "MySQL", "Blade", "Bootstrap", "JavaScript"],
     images: [
       {
         src: "/assets/Business Permit.png",
-        caption: "Business Permit System — Administrative dashboard and permit application workflow",
+        caption:
+          "Municipal Business Permit System — Licensing officer dashboard and permit approval queue",
       },
     ],
-    accentColor: "from-sky-500/20 via-blue-500/15 to-indigo-500/20",
   },
 ]
 
-export const SKILL_GROUPS: SkillGroup[] = [
+export const SKILL_DOMAINS: SkillDomain[] = [
   {
+    index: "01",
     id: "frontend",
-    title: "Modern Frontend & UI Engineering",
-    subtitle: "Reactive interfaces, design systems & hardware-accelerated motion",
-    iconName: "Layout",
-    accent: "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
-    skills: [
-      { name: "React 18 & Hooks", level: "Advanced" },
-      { name: "TypeScript 5", level: "Advanced" },
-      { name: "shadcn/ui & Radix Primitives", level: "Advanced" },
-      { name: "Tailwind CSS", level: "Advanced" },
-      { name: "Framer Motion & View Transitions", level: "Advanced" },
-      { name: "HTML5 / CSS3 / HLS.js", level: "Advanced" },
+    title: "Frontend Architecture & Interface Design",
+    summary:
+      "Component-driven web interfaces with native browser view transitions,HLS media playback, and responsive layouts.",
+    appliedIn: "OverView, Enlogada Clinic, Portfolio v2",
+    items: [
+      "React 18",
+      "TypeScript 5.7",
+      "shadcn/ui",
+      "Tailwind CSS",
+      "Framer Motion",
+      "View Transitions API",
+      "HLS.js",
+      "HTML5 / CSS3",
     ],
   },
   {
-    id: "backend",
-    title: "Backend Architecture & APIs",
-    subtitle: "Scalable REST servers, stream proxies & real-time bots",
-    iconName: "Server",
-    accent: "text-violet-400 bg-violet-500/10 border-violet-500/30",
-    skills: [
-      { name: "Node.js & Express", level: "Advanced" },
-      { name: "PHP & Laravel", level: "Advanced" },
-      { name: "Discord.js v14 & @discordjs/voice", level: "Advanced" },
-      { name: "JWT & RBAC Authentication", level: "Advanced" },
-      { name: "Java (Oracle Certified)", level: "Proficient" },
-      { name: "Python Automation", level: "Proficient" },
+    index: "02",
+    id: "backend-voice",
+    title: "Backend Services, Real-Time Voice & AI Systems",
+    summary:
+      "REST APIs, CORS stream proxies, 48kHz Opus voice pipelines, FFmpeg real-time DSP audio filters, and NLP intent routing.",
+    appliedIn: "SpotiBAI (Badi), OverView API, Business Permit",
+    items: [
+      "Node.js & Express",
+      "Discord.js v14",
+      "@discordjs/voice",
+      "FFmpeg Audio DSP",
+      "PHP & Laravel",
+      "JWT & RBAC Auth",
+      "Model Context Protocol (MCP)",
+      "Java (Oracle Certified)",
     ],
   },
   {
+    index: "03",
     id: "game-mobile",
-    title: "Game Dev & Mobile Engineering",
-    subtitle: "2D RPG systems, custom sprite animators & cross-platform apps",
-    iconName: "Gamepad2",
-    accent: "text-amber-400 bg-amber-500/10 border-amber-500/30",
-    skills: [
-      { name: "Unity 6.5 (URP 2D)", level: "Advanced" },
-      { name: "C# Game Systems & Editor Tools", level: "Advanced" },
-      { name: "2D Sprite Animation & 9-Slice UI", level: "Advanced" },
-      { name: "React Native Mobile Dev", level: "Proficient" },
-      { name: "Procedural Audio & State Machines", level: "Proficient" },
+    title: "2D Game Engines & Cross-Platform Mobile",
+    summary:
+      "Deterministic C# Unity scene builders, frame-accurate sprite state machines, procedural audio, and mobile apps.",
+    appliedIn: "Trivia Attack (Unity 6.5), CineBai Mobile",
+    items: [
+      "Unity 6.5 (URP 2D)",
+      "C# Systems & Editor Tooling",
+      "Custom SpriteAnimator",
+      "9-Slice Pixel UI",
+      "Procedural WAV Synthesis",
+      "React Native",
     ],
   },
   {
-    id: "database-devops",
-    title: "Databases, Testing & DevOps",
-    subtitle: "Relational modeling, ORM pipelines, containerization & CI/CD",
-    iconName: "Database",
-    accent: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
-    skills: [
-      { name: "PostgreSQL", level: "Advanced" },
-      { name: "Prisma ORM", level: "Advanced" },
-      { name: "MySQL", level: "Advanced" },
-      { name: "Vitest & Playwright E2E", level: "Proficient" },
-      { name: "Docker & Git / GitHub", level: "Proficient" },
-      { name: "Vercel & Cloud Deployment", level: "Advanced" },
+    index: "04",
+    id: "data-infra",
+    title: "Relational Databases, Testing & Deployment",
+    summary:
+      "Normalized schema design, transactional locking, ORM migrations, automated E2E browser verification, and CI/CD.",
+    appliedIn: "All 6 Production Systems",
+    items: [
+      "PostgreSQL",
+      "Prisma ORM",
+      "MySQL",
+      "Vitest & Supertest",
+      "Playwright E2E",
+      "Docker",
+      "Git & GitHub",
+      "Vercel",
     ],
   },
 ]
@@ -401,12 +407,13 @@ export const TECH_MARQUEE_ITEMS = [
   "Tailwind CSS",
   "Framer Motion",
   "Unity 6.5 URP 2D",
-  "C# Game Engine",
+  "C# Scene Builders",
   "Node.js & Express",
-  "PostgreSQL",
-  "Prisma ORM",
   "Discord.js v14",
   "@discordjs/voice",
+  "FFmpeg DSP Filters",
+  "PostgreSQL",
+  "Prisma ORM",
   "HLS.js Streaming",
   "Laravel & PHP",
   "React Native",
@@ -414,21 +421,20 @@ export const TECH_MARQUEE_ITEMS = [
   "Playwright E2E",
   "Vitest",
   "Docker",
-  "Vercel",
 ]
 
 export const CERTIFICATE_DATA = {
   title: "Java Fundamentals — Course Completion Certificate",
   issuer: "Oracle Academy",
   date: "June 19, 2024",
-  credentialType: "Official Academic Certification",
+  credentialId: "Oracle Academy Official Record",
   description:
-    "Awarded by Oracle Academy for successfully completing the Java Fundamentals curriculum covering Object-Oriented Programming (OOP), data structures, control flow, exception handling, and software engineering principles.",
+    "Awarded by Oracle Academy upon successful completion of the Java Fundamentals curriculum covering object-oriented programming, data structures, control flow, exception handling, and modular software design.",
   pdfUrl: "/assets/certificate.pdf",
   skillsVerified: [
     "Object-Oriented Programming (OOP)",
-    "Java Syntax & Core Class Libraries",
-    "Data Structures & Algorithms",
+    "Java Core Class Libraries",
+    "Data Structures & Control Flow",
     "Exception Handling & Debugging",
     "Modular Software Design",
   ],

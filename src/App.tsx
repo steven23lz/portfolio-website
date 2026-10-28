@@ -2,24 +2,16 @@ import React, { useEffect, useRef, useState } from "react"
 import { flushSync } from "react-dom"
 import { AnimatePresence, motion } from "framer-motion"
 import {
+  ArrowUpRight,
   Award,
-  Bot,
   Check,
   ChevronDown,
-  ChevronRight,
-  Code2,
   Copy,
-  Cpu,
-  Database,
-  ExternalLink,
   Eye,
   FileText,
-  Gamepad2,
   Github,
-  Globe,
-  GraduationCap,
-  Layers,
-  Layout,
+  Grid,
+  ListFilter,
   Mail,
   MapPin,
   Menu,
@@ -28,28 +20,17 @@ import {
   Phone,
   Play,
   Send,
-  Server,
-  Sparkles,
   Sun,
-  Terminal,
   X,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import {
   CERTIFICATE_DATA,
-  HERO_STATS,
   PROFILE_DATA,
   PROJECTS_DATA,
-  SKILL_GROUPS,
+  SKILL_DOMAINS,
   TECH_MARQUEE_ITEMS,
   type ProjectCategory,
   type ProjectItem,
@@ -61,20 +42,18 @@ import {
 } from "@/lib/utils"
 
 const NAV_ITEMS = [
-  { id: "home", label: "Home" },
-  { id: "about", label: "About" },
-  { id: "skills", label: "Tech Stack" },
-  { id: "projects", label: "Projects" },
-  { id: "certificate", label: "Certification" },
-  { id: "contact", label: "Contact" },
+  { id: "projects", index: "01", label: "Selected Work" },
+  { id: "skills", index: "02", label: "Technical Ledger" },
+  { id: "certificate", index: "03", label: "Credentials" },
+  { id: "contact", index: "04", label: "Correspondence" },
 ]
 
 const CATEGORY_TABS: { id: ProjectCategory; label: string; count: number }[] = [
-  { id: "all", label: "All Projects", count: PROJECTS_DATA.length },
+  { id: "all", label: "All Works", count: PROJECTS_DATA.length },
   {
-    id: "web",
-    label: "Web Platforms",
-    count: PROJECTS_DATA.filter((p) => p.category === "web").length,
+    id: "bots",
+    label: "Voice & AI Bots",
+    count: PROJECTS_DATA.filter((p) => p.category === "bots").length,
   },
   {
     id: "games",
@@ -82,21 +61,22 @@ const CATEGORY_TABS: { id: ProjectCategory; label: string; count: number }[] = [
     count: PROJECTS_DATA.filter((p) => p.category === "games").length,
   },
   {
-    id: "bots",
-    label: "Bots & Audio",
-    count: PROJECTS_DATA.filter((p) => p.category === "bots").length,
+    id: "web",
+    label: "Web Systems",
+    count: PROJECTS_DATA.filter((p) => p.category === "web").length,
   },
 ]
 
 export function App() {
   const [theme, setTheme] = useState<"dark" | "light">("dark")
-  const [activeNav, setActiveNav] = useState<string>("home")
+  const [activeNav, setActiveNav] = useState<string>("projects")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [roleIndex, setRoleIndex] = useState(0)
+  const [localTime, setLocalTime] = useState<string>("")
   const [marqueePaused, setMarqueePaused] = useState(false)
 
   // Projects state
   const [activeCategory, setActiveCategory] = useState<ProjectCategory>("all")
+  const [layoutMode, setLayoutMode] = useState<"editorial" | "compact">("editorial")
   const [cardImageIndex, setCardImageIndex] = useState<Record<string, number>>({})
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({})
 
@@ -130,7 +110,8 @@ export function App() {
         const scrollable =
           document.documentElement.scrollHeight - window.innerHeight
         const scrolled = window.scrollY
-        const ratio = scrollable > 0 ? Math.min(1, Math.max(0, scrolled / scrollable)) : 0
+        const ratio =
+          scrollable > 0 ? Math.min(1, Math.max(0, scrolled / scrollable)) : 0
         progress.style.transform = `scaleX(${ratio})`
       }
 
@@ -140,12 +121,24 @@ export function App() {
     }
   }, [])
 
-  // 2. Role rotator interval
+  // 2. Live Cebu (UTC+8) clock in header
   useEffect(() => {
-    const interval = window.setInterval(() => {
-      setRoleIndex((prev) => (prev + 1) % PROFILE_DATA.roles.length)
-    }, 3200)
-    return () => window.clearInterval(interval)
+    const updateClock = () => {
+      try {
+        const formatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Manila",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+        setLocalTime(formatter.format(new Date()))
+      } catch {
+        setLocalTime("UTC+8")
+      }
+    }
+    updateClock()
+    const timer = window.setInterval(updateClock, 30000)
+    return () => window.clearInterval(timer)
   }, [])
 
   // 3. Active section IntersectionObserver
@@ -163,7 +156,7 @@ export function App() {
           setActiveNav(visible[0].target.id)
         }
       },
-      { threshold: [0.2, 0.45, 0.7], rootMargin: "-80px 0px -35% 0px" }
+      { threshold: [0.15, 0.4], rootMargin: "-80px 0px -40% 0px" }
     )
 
     sections.forEach((sec) => observer.observe(sec))
@@ -248,7 +241,7 @@ export function App() {
     })
   }
 
-  // Discrete entry/exit toggle for architecture drawer on project card
+  // Discrete entry/exit toggle for architecture drawer on project row
   const toggleCardArchitecture = async (projectId: string) => {
     const el = detailRefs.current[projectId]
     if (!el) return
@@ -310,69 +303,44 @@ export function App() {
       ? PROJECTS_DATA
       : PROJECTS_DATA.filter((p) => p.category === activeCategory)
 
-  const renderSkillIcon = (iconName: string) => {
-    switch (iconName) {
-      case "Layout":
-        return <Layout className="h-5 w-5" />
-      case "Server":
-        return <Server className="h-5 w-5" />
-      case "Gamepad2":
-        return <Gamepad2 className="h-5 w-5" />
-      default:
-        return <Database className="h-5 w-5" />
-    }
-  }
-
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground selection:bg-cyan-500/30">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Decorative Scroll Progress Bar (scroll-progress-indicator) */}
       <div id="scroll-progress" aria-hidden="true" />
 
-      {/* Ambient Background Orbs & Grid */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
-      >
-        <div className="absolute -top-40 left-1/4 h-[520px] w-[520px] rounded-full bg-cyan-500/12 blur-[135px]" />
-        <div className="absolute top-1/3 -right-32 h-[460px] w-[460px] rounded-full bg-violet-600/12 blur-[140px]" />
-        <div className="absolute bottom-0 left-10 h-[400px] w-[400px] rounded-full bg-sky-500/10 blur-[130px]" />
-        <div
-          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.045]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
-
-      {/* Floating Glassmorphic Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/75 backdrop-blur-xl">
-        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
-          <a
-            href="#home"
-            className="group flex items-center gap-3 focus:outline-none"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 via-sky-500 to-violet-600 font-display text-base font-extrabold text-white shadow-md shadow-cyan-500/25 transition-transform duration-300 group-hover:scale-105">
-              SF
-            </div>
-            <div>
-              <span className="font-display text-lg font-bold tracking-tight">
-                Sendrijas
+      {/* =================================================================
+          ARCHITECTURAL TOP INDEX BAR
+         ================================================================= */}
+      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          {/* Left: Identity & Location */}
+          <div className="flex items-center gap-6">
+            <a
+              href="#home"
+              className="flex items-baseline gap-2 focus:outline-none"
+            >
+              <span className="font-display text-base font-extrabold uppercase tracking-tight">
+                Steven Sendrijas
               </span>
-              <span className="text-cyan-400 font-display text-lg font-extrabold">
-                .dev
-              </span>
-              <p className="hidden text-[11px] text-muted-foreground sm:block">
-                Full-Stack &amp; Unity Game Engineer
-              </p>
-            </div>
-          </a>
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            </a>
 
-          {/* Desktop Navigation Pills */}
+            <div className="hidden items-center gap-2 border-l border-border pl-6 font-mono text-[11px] text-muted-foreground xl:flex">
+              <MapPin className="h-3 w-3 text-primary" />
+              <span>CEBU, PH</span>
+              {localTime && (
+                <>
+                  <span>—</span>
+                  <span className="text-foreground">{localTime}</span>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Center: Numbered Section Index */}
           <nav
             aria-label="Primary Navigation"
-            className="hidden items-center gap-1 rounded-full border border-border/70 bg-secondary/50 p-1.5 backdrop-blur-md md:flex"
+            className="hidden items-center gap-7 md:flex"
           >
             {NAV_ITEMS.map((item) => {
               const isActive = activeNav === item.id
@@ -381,41 +349,46 @@ export function App() {
                   key={item.id}
                   href={`#${item.id}`}
                   onClick={() => setActiveNav(item.id)}
-                  className={`relative rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
+                  className={`relative py-5 font-mono text-xs uppercase tracking-wider transition-colors ${
                     isActive
-                      ? "text-white"
+                      ? "font-semibold text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
+                  <span className="mr-1.5 text-primary">{item.index}/</span>
+                  <span>{item.label}</span>
                   {isActive && (
                     <motion.span
-                      layoutId="active-nav-pill"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 shadow-sm shadow-cyan-500/30"
+                      layoutId="editorial-nav-line"
+                      transition={{ type: "spring", stiffness: 400, damping: 34 }}
+                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary"
                     />
                   )}
-                  {item.label}
                 </a>
               )
             })}
           </nav>
 
-          {/* Header Actions */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
+          {/* Right: Theme Switcher & GitHub */}
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
               onClick={toggleTheme}
-              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-              title="Toggle theme"
-              className="rounded-full"
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-secondary/50 px-3 font-mono text-[11px] uppercase tracking-wider text-foreground transition-colors hover:border-primary/50"
             >
               {theme === "dark" ? (
-                <Sun className="h-4 w-4 text-amber-300" />
+                <>
+                  <Sun className="h-3.5 w-3.5 text-[#d4a359]" />
+                  <span className="hidden sm:inline">Paper</span>
+                </>
               ) : (
-                <Moon className="h-4 w-4 text-slate-700" />
+                <>
+                  <Moon className="h-3.5 w-3.5 text-primary" />
+                  <span className="hidden sm:inline">Carbon</span>
+                </>
               )}
-            </Button>
+            </button>
 
             <a
               href={PROFILE_DATA.github}
@@ -423,16 +396,10 @@ export function App() {
               rel="noreferrer"
               className="hidden sm:inline-flex"
             >
-              <Button variant="outline" size="sm" className="rounded-full">
-                <Github className="h-4 w-4" />
+              <Button variant="outline" size="sm">
+                <Github className="h-3.5 w-3.5" />
                 <span>GitHub</span>
-              </Button>
-            </a>
-
-            <a href="#contact" className="hidden lg:inline-flex">
-              <Button size="sm" className="rounded-full">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Hire / Collaborate</span>
+                <ArrowUpRight className="h-3 w-3" />
               </Button>
             </a>
 
@@ -444,24 +411,24 @@ export function App() {
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? (
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               ) : (
-                <Menu className="h-5 w-5" />
+                <Menu className="h-4 w-4" />
               )}
             </Button>
           </div>
         </div>
 
-        {/* Mobile Drawer */}
+        {/* Mobile Navigation Drawer */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="border-t border-border/60 bg-background/95 px-4 py-4 backdrop-blur-xl md:hidden"
+              className="border-t border-border bg-background px-4 py-4 md:hidden"
             >
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col space-y-2">
                 {NAV_ITEMS.map((item) => (
                   <a
                     key={item.id}
@@ -470,13 +437,13 @@ export function App() {
                       setActiveNav(item.id)
                       setMobileMenuOpen(false)
                     }}
-                    className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
-                      activeNav === item.id
-                        ? "bg-cyan-500/15 text-cyan-400"
-                        : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
-                    }`}
+                    className="flex items-center justify-between rounded-md px-3 py-2 font-mono text-xs uppercase tracking-wider hover:bg-secondary"
                   >
-                    {item.label}
+                    <span>
+                      <span className="mr-2 text-primary">{item.index}/</span>
+                      {item.label}
+                    </span>
+                    <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground" />
                   </a>
                 ))}
               </div>
@@ -487,801 +454,694 @@ export function App() {
 
       <main>
         {/* =================================================================
-            HERO SECTION
+            ASYMMETRIC EDITORIAL HERO & FIELD DOSSIER
            ================================================================= */}
         <section
           id="home"
-          className="relative mx-auto max-w-7xl px-4 pt-12 pb-20 sm:px-6 lg:px-8 lg:pt-20"
+          className="mx-auto max-w-7xl border-b border-border px-4 pt-10 pb-16 sm:px-6 lg:px-8 lg:pt-16 lg:pb-24"
         >
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
-            {/* Left Column: Headline & CTA */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:col-span-7"
-            >
-              <div className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-400">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                </span>
-                <span>Available for Full-Stack &amp; Game Dev Projects</span>
-              </div>
-
-              <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-6xl lg:text-[3.65rem] lg:leading-[1.08]">
-                Building{" "}
-                <span className="bg-gradient-to-r from-cyan-400 via-sky-400 to-violet-500 bg-clip-text text-transparent">
-                  High-Impact
-                </span>{" "}
-                Web Platforms, Games &amp; Bots.
-              </h1>
-
-              {/* Animated Role Rotator */}
-              <div className="mt-5 flex h-9 items-center gap-2.5 text-lg font-medium text-muted-foreground sm:text-xl">
-                <Terminal className="h-5 w-5 shrink-0 text-cyan-400" />
-                <span className="text-foreground/80">I am a</span>
-                <div className="relative inline-flex overflow-hidden">
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={PROFILE_DATA.roles[roleIndex]}
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: -20, opacity: 0 }}
-                      transition={{ duration: 0.28 }}
-                      className="font-display font-bold text-cyan-400"
-                    >
-                      {PROFILE_DATA.roles[roleIndex]}
-                    </motion.span>
-                  </AnimatePresence>
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
+            {/* Left 8 Columns: Editorial Statement & Featured Index */}
+            <div className=" flex flex-col justify-between lg:col-span-8 lg:border-r lg:border-border lg:pr-10">
+              <div>
+                <div className="flex flex-wrap items-center gap-3 font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                  <span className="inline-flex items-center gap-2 text-primary">
+                    <span className="h-2 w-2 rounded-full bg-[#4d9375]" />
+                    <span>Available for Software &amp; Game Engineering</span>
+                  </span>
+                  <span>/</span>
+                  <span>FOLIO EDITION 2026</span>
                 </div>
-              </div>
 
-              <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Hi, I&apos;m{" "}
-                <strong className="font-semibold text-foreground">
-                  {PROFILE_DATA.name}
-                </strong>
-                . {PROFILE_DATA.bio}
-              </p>
+                <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.06] tracking-tight sm:text-6xl lg:text-[4.1rem]">
+                  Engineering{" "}
+                  <span className="font-serif-editorial italic font-normal text-primary">
+                    full-stack platforms,
+                  </span>{" "}
+                  2D RPGs &amp;{" "}
+                  <span className="font-serif-editorial italic font-normal text-[#d4a359]">
+                    real-time voice bots.
+                  </span>
+                </h1>
 
-              {/* Quick Flagship Pills */}
-              <div className="mt-6 flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Latest Shipped:
-                </span>
-                {PROJECTS_DATA.slice(0, 3).map((proj) => (
-                  <button
-                    key={proj.id}
-                    type="button"
-                    onClick={() => openProjectModal(proj, 0)}
-                    className="group inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300 transition-all hover:border-cyan-400 hover:bg-cyan-500/20"
+                <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                  I&apos;m{" "}
+                  <strong className="font-semibold text-foreground">
+                    {PROFILE_DATA.name}
+                  </strong>
+                  , a developer based in Cebu, Philippines. I build software from
+                  the database schema and audio pipeline up to the user interface—whether
+                  that&apos;s a 48kHz Opus Discord music &amp; Bisaya AI bot, a 1,449-question
+                  Unity 6 RPG, or a multi-source HLS streaming platform.
+                </p>
+
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <a href="#projects">
+                    <Button size="lg">
+                      <span>Inspect Selected Work (06)</span>
+                      <ArrowUpRight className="h-4 w-4" />
+                    </Button>
+                  </a>
+                  <a
+                    href={PROFILE_DATA.certificatePdf}
+                    target="_blank"
+                    rel="noreferrer"
                   >
-                    <Sparkles className="h-3 w-3 text-cyan-400" />
-                    <span>{proj.shortTitle}</span>
-                    <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-                  </button>
-                ))}
+                    <Button variant="outline" size="lg">
+                      <FileText className="h-3.5 w-3.5 text-primary" />
+                      <span>Oracle Java Certificate</span>
+                    </Button>
+                  </a>
+                </div>
               </div>
 
-              {/* CTA Buttons */}
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <a href="#projects">
-                  <Button size="lg">
-                    <Layers className="h-4 w-4" />
-                    <span>Explore Featured Projects</span>
-                  </Button>
-                </a>
-                <a
-                  href={PROFILE_DATA.certificatePdf}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Button variant="outline" size="lg">
-                    <Award className="h-4 w-4 text-cyan-400" />
-                    <span>Oracle Java Certificate</span>
-                  </Button>
-                </a>
-                <a
-                  href={PROFILE_DATA.github}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Button variant="ghost" size="lg">
-                    <Github className="h-4 w-4" />
-                    <span>@steven23lz</span>
-                  </Button>
-                </a>
-              </div>
-            </motion.div>
-
-            {/* Right Column: Interactive Profile & Flagship Preview Card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.94 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:col-span-5"
-            >
-              <Card className="relative mx-auto max-w-md overflow-hidden border-cyan-500/30 bg-gradient-to-b from-card/95 to-card/75 p-6 shadow-2xl shadow-cyan-500/10">
-                <div className="flex items-center justify-between border-b border-border/60 pb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full bg-rose-500/80" />
-                    <span className="h-3 w-3 rounded-full bg-amber-400/80" />
-                    <span className="h-3 w-3 rounded-full bg-emerald-500/80" />
-                    <span className="ml-2 font-mono text-xs text-muted-foreground">
-                      steven-sendrijas.profile.tsx
-                    </span>
-                  </div>
-                  <Badge variant="emerald">BSIT Graduate</Badge>
+              {/* Interactive Featured Index Table */}
+              <div className="mt-12 border-t border-border pt-6">
+                <div className="mb-3 flex items-center justify-between font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                  <span>RECENT SHIPPED SYSTEMS (CLICK TO INSPECT)</span>
+                  <span>2025 — 2026</span>
                 </div>
 
-                <div className="mt-5 flex flex-col items-center text-center sm:flex-row sm:text-left gap-5">
-                  <div className="relative shrink-0">
-                    <div className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-cyan-500 via-sky-400 to-violet-600 opacity-75 blur-sm" />
-                    <img
-                      src={PROFILE_DATA.avatar}
-                      alt={PROFILE_DATA.name}
-                      className="relative h-28 w-28 rounded-2xl object-cover border-2 border-background shadow-lg"
-                    />
-                  </div>
-                  <div>
-                    <h2 className="font-display text-xl font-bold">
-                      {PROFILE_DATA.name}
-                    </h2>
-                    <p className="mt-1 text-xs font-medium text-cyan-400">
-                      {PROFILE_DATA.title}
-                    </p>
-                    <div className="mt-2.5 flex flex-wrap items-center justify-center sm:justify-start gap-2 text-xs text-muted-foreground">
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5 text-cyan-400" />
-                        {PROFILE_DATA.location}
-                      </span>
-                      <span>•</span>
-                      <span className="inline-flex items-center gap-1">
-                        <GraduationCap className="h-3.5 w-3.5 text-violet-400" />
-                        {PROFILE_DATA.education}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Live Stack Telemetry */}
-                <div className="mt-6 rounded-xl border border-border/70 bg-secondary/40 p-4">
-                  <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
-                    <span>ACTIVE PRODUCTION STACK</span>
-                    <span className="font-mono text-cyan-400">2026.v2</span>
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {[
-                      "React 18",
-                      "TypeScript",
-                      "shadcn/ui",
-                      "Tailwind CSS",
-                      "Unity 6.5 (URP 2D)",
-                      "C#",
-                      "Node.js",
-                      "PostgreSQL",
-                      "Prisma ORM",
-                      "Discord.js v14",
-                      "Laravel",
-                    ].map((tech) => (
-                      <span
-                        key={tech}
-                        className="rounded-lg border border-border/70 bg-background/70 px-2.5 py-1 font-mono text-[11px] font-medium text-foreground/90"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Interactive Featured Preview Strip */}
-                <div className="mt-4 grid grid-cols-3 gap-2.5">
+                <div className="divide-y divide-border border-y border-border">
                   {PROJECTS_DATA.slice(0, 3).map((proj) => (
                     <button
                       key={proj.id}
                       type="button"
                       onClick={() => openProjectModal(proj, 0)}
-                      className="group relative overflow-hidden rounded-xl border border-border/70 bg-secondary/40 p-1.5 text-left transition-all hover:border-cyan-500/60"
+                      className="group flex w-full items-center justify-between py-3.5 text-left transition-colors hover:bg-secondary/40 px-2"
                     >
-                      <img
-                        src={proj.images[0].src}
-                        alt={proj.shortTitle}
-                        className="h-14 w-full rounded-lg object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                      <p className="mt-1.5 truncate text-[11px] font-semibold">
-                        {proj.shortTitle}
-                      </p>
-                      <p className="truncate text-[10px] text-cyan-400">
-                        {proj.categoryLabel}
-                      </p>
+                      <div className="flex items-baseline gap-4">
+                        <span className="font-mono text-xs font-semibold text-primary">
+                          {proj.index}
+                        </span>
+                        <div>
+                          <span className="font-display text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                            {proj.shortTitle}
+                          </span>
+                          <span className="ml-3 hidden font-mono text-xs text-muted-foreground sm:inline">
+                            {proj.subtitle.split("•").slice(0, 3).join("•")}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Badge variant="secondary">{proj.categoryLabel}</Badge>
+                        <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
+                      </div>
                     </button>
                   ))}
                 </div>
-              </Card>
-            </motion.div>
-          </div>
+              </div>
+            </div>
 
-          {/* Hero Metrics Row */}
-          <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {HERO_STATS.map((stat, idx) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: idx * 0.08 }}
-              >
-                <Card className="h-full border-border/60 bg-card/65 p-5">
-                  <p className="font-display text-3xl font-extrabold bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent sm:text-4xl">
-                    {stat.value}
-                  </p>
-                  <p className="mt-1.5 text-sm font-semibold text-foreground">
-                    {stat.label}
-                  </p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
-                    {stat.detail}
-                  </p>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </section>
+            {/* Right 4 Columns: Portrait & Architectural Field Dossier */}
+            <div className="flex flex-col justify-between lg:col-span-4">
+              <div className="rounded-xl border border-border bg-card p-5">
+                <div className="flex items-center justify-between border-b border-border pb-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <span>ENGINEER DOSSIER</span>
+                  <span className="text-primary">ID // SFS-23</span>
+                </div>
 
-        {/* =================================================================
-            INFINITE TECH MARQUEE WITH ACCESSIBLE PAUSE CONTROL (motion)
-           ================================================================= */}
-        <section
-          aria-label="Technology Marquee"
-          className="relative border-y border-border/60 bg-secondary/25 py-4"
-        >
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 pb-2 sm:px-6 lg:px-8">
-            <span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-              Core Engineering Ecosystem
-            </span>
-            <button
-              type="button"
-              onClick={() => setMarqueePaused((prev) => !prev)}
-              aria-pressed={marqueePaused}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-cyan-500/40 hover:text-foreground"
-            >
-              {marqueePaused ? (
-                <>
-                  <Play className="h-3 w-3 text-cyan-400" />
-                  <span>Resume Motion</span>
-                </>
-              ) : (
-                <>
-                  <Pause className="h-3 w-3 text-cyan-400" />
-                  <span>Pause Banner</span>
-                </>
-              )}
-            </button>
-          </div>
+                <div className="mt-4 overflow-hidden rounded-lg border border-border bg-secondary">
+                  <img
+                    src={PROFILE_DATA.avatar}
+                    alt={PROFILE_DATA.name}
+                    className="h-64 w-full object-cover object-top"
+                  />
+                </div>
 
-          <div className="overflow-hidden">
-            <div
-              className="marquee-track gap-3 py-1"
-              data-paused={marqueePaused ? "true" : "false"}
-            >
-              {[...TECH_MARQUEE_ITEMS, ...TECH_MARQUEE_ITEMS].map(
-                (item, index) => (
-                  <div
-                    key={`${item}-${index}`}
-                    className="mx-1.5 inline-flex items-center gap-2 rounded-xl border border-border/70 bg-card/80 px-4 py-2 text-xs font-semibold shadow-sm"
-                  >
-                    <span className="h-2 w-2 rounded-full bg-cyan-400" />
-                    <span>{item}</span>
+                <dl className="mt-5 divide-y divide-border font-mono text-xs">
+                  <div className="flex justify-between py-2.5">
+                    <dt className="text-muted-foreground">NAME</dt>
+                    <dd className="font-semibold text-foreground">
+                      {PROFILE_DATA.shortName}
+                    </dd>
                   </div>
-                )
-              )}
+                  <div className="flex justify-between py-2.5">
+                    <dt className="text-muted-foreground">EDUCATION</dt>
+                    <dd className="text-foreground">{PROFILE_DATA.education}</dd>
+                  </div>
+                  <div className="flex justify-between py-2.5">
+                    <dt className="text-muted-foreground">BASE</dt>
+                    <dd className="text-foreground">{PROFILE_DATA.location}</dd>
+                  </div>
+                  <div className="flex justify-between py-2.5">
+                    <dt className="text-muted-foreground">CORE STACK</dt>
+                    <dd className="text-right text-foreground">
+                      React, TS, Unity C#, Node, PG
+                    </dd>
+                  </div>
+                  <div className="flex justify-between pt-2.5">
+                    <dt className="text-muted-foreground">CREDENTIAL</dt>
+                    <dd className="font-semibold text-[#d4a359]">
+                      Oracle Academy Java
+                    </dd>
+                  </div>
+                </dl>
+              </div>
             </div>
           </div>
         </section>
 
         {/* =================================================================
-            ABOUT SECTION
-           ================================================================= */}
-        <section
-          id="about"
-          className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8"
-        >
-          <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
-            <div>
-              <Badge variant="default" className="mb-3">
-                <Code2 className="h-3.5 w-3.5" />
-                <span>About Me &amp; Engineering Philosophy</span>
-              </Badge>
-              <h2 className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-                Bridging Full-Stack Web Architecture &amp; Interactive Game Systems
-              </h2>
-            </div>
-            <p className="max-w-xl text-sm text-muted-foreground sm:text-base">
-              I enjoy taking complex technical problems—from multi-source video stream
-              failover and low-latency Opus audio pipelines to programmatic Unity scene
-              builders—and turning them into clean, reliable software.
-            </p>
-          </div>
-
-          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-            <Card className="p-6">
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-400">
-                <Globe className="h-6 w-6" />
-              </div>
-              <CardTitle className="text-lg">
-                Full-Stack Web Platforms
-              </CardTitle>
-              <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
-                Architecting responsive React 18 &amp; TypeScript applications backed by
-                Node.js/Express, Laravel, and PostgreSQL—such as{" "}
-                <strong className="text-foreground">OverView</strong>&apos;s 3-tier
-                Automated HLS Video Discovery Engine and the{" "}
-                <strong className="text-foreground">Enlogada Clinic</strong> system.
-              </p>
-            </Card>
-
-            <Card className="p-6">
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400">
-                <Gamepad2 className="h-6 w-6" />
-              </div>
-              <CardTitle className="text-lg">
-                Unity 2D Game &amp; Mobile Dev
-              </CardTitle>
-              <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
-                Building deterministic C# gameplay systems in Unity 6.5 (URP 2D)—including{" "}
-                <strong className="text-foreground">Trivia Attack</strong>&apos;s
-                automated scene builders, frame-accurate sprite animators, 1,449-question
-                JSON pipeline, and{" "}
-                <strong className="text-foreground">CineBai</strong> on React Native.
-              </p>
-            </Card>
-
-            <Card className="p-6">
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500/15 text-violet-400">
-                <Bot className="h-6 w-6" />
-              </div>
-              <CardTitle className="text-lg">
-                Real-Time Voice Bots &amp; Tooling
-              </CardTitle>
-              <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
-                Designing event-driven Discord bots with TypeScript 5.7,{" "}
-                <code className="text-xs text-cyan-300">@discordjs/voice</code>, FFmpeg
-                Opus pipelines, and Prisma ORM—featuring bulk multi-track query parsing
-                and persistent guild state management.
-              </p>
-            </Card>
-          </div>
-        </section>
-
-        {/* =================================================================
-            SKILLS BENTO GRID SECTION
-           ================================================================= */}
-        <section
-          id="skills"
-          className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8"
-        >
-          <div className="text-center">
-            <Badge variant="violet" className="mb-3">
-              <Cpu className="h-3.5 w-3.5" />
-              <span>Technical Stack &amp; Capabilities</span>
-            </Badge>
-            <h2 className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-              Upgraded Modern Tech Stack
-            </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base">
-              Powered by React 18, TypeScript, shadcn/ui, Tailwind CSS, Framer Motion,
-              Unity 6.5 C#, Node.js, Laravel, and PostgreSQL.
-            </p>
-          </div>
-
-          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
-            {SKILL_GROUPS.map((group, idx) => (
-              <motion.div
-                key={group.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: idx * 0.08 }}
-              >
-                <Card className="h-full p-6">
-                  <div className="flex items-start gap-4">
-                    <div
-                      className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${group.accent}`}
-                    >
-                      {renderSkillIcon(group.iconName)}
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">{group.title}</CardTitle>
-                      <CardDescription className="mt-1">
-                        {group.subtitle}
-                      </CardDescription>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                    {group.skills.map((skill) => (
-                      <div
-                        key={skill.name}
-                        className="flex items-center justify-between rounded-xl border border-border/70 bg-secondary/35 px-3.5 py-2.5 text-xs"
-                      >
-                        <span className="font-semibold text-foreground">
-                          {skill.name}
-                        </span>
-                        <span className="rounded-md bg-cyan-500/10 px-2 py-0.5 font-mono text-[10px] font-medium text-cyan-400">
-                          {skill.level}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* =================================================================
-            FEATURED PROJECTS SECTION
+            01 // SELECTED WORKS (CASE STUDY SPREADS & COMPACT ARCHIVE)
             (group-element-transitions, same-document-transitions, animate-element-entry-exit)
            ================================================================= */}
         <section
           id="projects"
-          className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8"
+          className="mx-auto max-w-7xl border-b border-border px-4 py-20 sm:px-6 lg:px-8"
         >
-          <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
+          {/* Section Header & Controls */}
+          <div className="flex flex-col justify-between gap-6 border-b border-border pb-8 lg:flex-row lg:items-end">
             <div>
-              <Badge variant="default" className="mb-3">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Selected Engineering Work</span>
-              </Badge>
+              <div className="font-mono text-xs font-semibold uppercase tracking-widest text-primary">
+                01 // SELECTED ENGINEERING WORK
+              </div>
               <h2
                 id="projects-grid-heading"
                 ref={projectsHeadingRef}
                 tabIndex={-1}
-                className="font-display text-3xl font-extrabold tracking-tight outline-none sm:text-4xl"
+                className="mt-2 font-display text-3xl font-extrabold tracking-tight outline-none sm:text-5xl"
               >
-                Featured Projects &amp; Systems
+                Production Systems{" "}
+                <span className="font-serif-editorial italic font-normal text-muted-foreground">
+                  &amp; Case Studies
+                </span>
               </h2>
-              <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
-                Filter across my latest Unity 2D RPG, full-stack streaming &amp; clinical
-                platforms, Discord voice bot, and mobile apps. Click any project to
-                inspect its architecture and high-resolution screenshots.
-              </p>
             </div>
 
-            {/* Category Filter Tabs (View Transitions API enabled) */}
-            <div
-              role="tablist"
-              aria-label="Filter projects by category"
-              className="flex flex-wrap gap-2 rounded-2xl border border-border/70 bg-secondary/40 p-1.5"
-            >
-              {CATEGORY_TABS.map((tab) => {
-                const active = activeCategory === tab.id
-                return (
-                  <button
-                    key={tab.id}
-                    role="tab"
-                    type="button"
-                    aria-selected={active}
-                    onClick={() => handleCategoryChange(tab.id)}
-                    className={`inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all ${
-                      active
-                        ? "bg-gradient-to-r from-cyan-500 to-violet-600 text-white shadow-md shadow-cyan-500/20"
-                        : "text-muted-foreground hover:bg-background/60 hover:text-foreground"
-                    }`}
-                  >
-                    <span>{tab.label}</span>
-                    <span
-                      className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] ${
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Category Filter Tabs (View Transitions API) */}
+              <div
+                role="tablist"
+                aria-label="Filter works by domain"
+                className="inline-flex flex-wrap gap-1 rounded-lg border border-border bg-secondary/50 p-1"
+              >
+                {CATEGORY_TABS.map((tab) => {
+                  const active = activeCategory === tab.id
+                  return (
+                    <button
+                      key={tab.id}
+                      role="tab"
+                      type="button"
+                      aria-selected={active}
+                      onClick={() => handleCategoryChange(tab.id)}
+                      className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-all ${
                         active
-                          ? "bg-white/20 text-white"
-                          : "bg-secondary text-muted-foreground"
+                          ? "bg-primary text-primary-foreground font-semibold"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
-                      {tab.count}
-                    </span>
-                  </button>
-                )
-              })}
+                      <span>{tab.label}</span>
+                      <span className="opacity-75">[{tab.count}]</span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* View Mode Switcher */}
+              <div className="hidden items-center rounded-lg border border-border bg-secondary/50 p-1 sm:inline-flex">
+                <button
+                  type="button"
+                  onClick={() => setLayoutMode("editorial")}
+                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 font-mono text-[11px] uppercase ${
+                    layoutMode === "editorial"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  title="Editorial Case Study View"
+                >
+                  <ListFilter className="h-3.5 w-3.5" />
+                  <span>Spread</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLayoutMode("compact")}
+                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 font-mono text-[11px] uppercase ${
+                    layoutMode === "compact"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  title="Compact 2-Column Grid"
+                >
+                  <Grid className="h-3.5 w-3.5" />
+                  <span>Grid</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Projects Grid */}
-          <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-2">
-            {filteredProjects.map((project) => {
+          {/* Projects List / Grid */}
+          <div
+            className={
+              layoutMode === "editorial"
+                ? "divide-y divide-border"
+                : "mt-10 grid grid-cols-1 gap-8 lg:grid-cols-2"
+            }
+          >
+            {filteredProjects.map((project, projIdx) => {
               const currentImgIdx = cardImageIndex[project.id] ?? 0
               const activeImage =
                 project.images[currentImgIdx] ?? project.images[0]
               const isExpanded = Boolean(expandedCards[project.id])
+              const isEven = projIdx % 2 === 1
 
-              return (
-                <Card
-                  key={project.id}
-                  style={{ viewTransitionName: project.vtName }}
-                  className="project-card-vt group flex flex-col justify-between overflow-hidden border-border/80 bg-card/85 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/50 hover:shadow-2xl hover:shadow-cyan-500/10"
-                >
-                  <div>
-                    {/* Visual Screenshot Header */}
-                    <div
-                      className={`relative overflow-hidden bg-gradient-to-br ${project.accentColor} p-3 sm:p-4`}
-                    >
-                      <div className="relative overflow-hidden rounded-xl border border-white/10 bg-slate-950 shadow-lg">
+              if (layoutMode === "compact") {
+                return (
+                  <Card
+                    key={project.id}
+                    style={{ viewTransitionName: project.vtName }}
+                    className="project-card-vt flex flex-col justify-between overflow-hidden p-6"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between font-mono text-xs text-muted-foreground">
+                        <span className="font-bold text-primary">
+                          {project.index} // {project.categoryLabel}
+                        </span>
+                        <span>{project.year}</span>
+                      </div>
+                      <h3 className="mt-2 font-display text-2xl font-bold">
+                        {project.title}
+                      </h3>
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        {project.description}
+                      </p>
+                      <div className="mt-4 overflow-hidden rounded-lg border border-border bg-black">
                         <img
                           src={activeImage.src}
                           alt={activeImage.caption}
                           loading="lazy"
-                          onClick={() =>
-                            openProjectModal(project, currentImgIdx)
-                          }
-                          className="aspect-video w-full cursor-pointer object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
+                          onClick={() => openProjectModal(project, currentImgIdx)}
+                          className="aspect-video w-full cursor-pointer object-cover object-top transition-transform duration-500 hover:scale-[1.02]"
                         />
-
-                        {/* Top Overlay Badges */}
-                        <div className="pointer-events-none absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
-                          <div className="flex flex-wrap items-center gap-1.5">
-                            <Badge
-                              variant="default"
-                              className="bg-slate-950/85 text-cyan-300 backdrop-blur-md"
-                            >
-                              {project.categoryLabel}
-                            </Badge>
-                            {project.isNew && (
-                              <Badge
-                                variant="amber"
-                                className="bg-slate-950/85 text-amber-300 backdrop-blur-md"
-                              >
-                                NEW • {project.year}
-                              </Badge>
-                            )}
-                          </div>
-                          <span className="rounded-full bg-slate-950/80 px-2.5 py-1 font-mono text-[11px] font-medium text-slate-200 backdrop-blur-md">
-                            {project.year}
-                          </span>
-                        </div>
-
-                        {/* Multi-Image Switcher Pills inside Card */}
-                        {project.images.length > 1 && (
-                          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
-                            <div className="inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-slate-950/85 p-1 backdrop-blur-md">
-                              {project.images.map((img, idx) => (
-                                <button
-                                  key={img.src}
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setCardImageIndex((prev) => ({
-                                      ...prev,
-                                      [project.id]: idx,
-                                    }))
-                                  }}
-                                  className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-colors ${
-                                    currentImgIdx === idx
-                                      ? "bg-cyan-500 text-slate-950"
-                                      : "text-slate-300 hover:text-white"
-                                  }`}
-                                >
-                                  Screen {idx + 1}
-                                </button>
-                              ))}
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                openProjectModal(project, currentImgIdx)
-                              }
-                              className="inline-flex items-center gap-1 rounded-xl border border-white/15 bg-slate-950/85 px-3 py-1.5 text-xs font-semibold text-cyan-300 backdrop-blur-md transition-colors hover:bg-cyan-500 hover:text-slate-950"
-                            >
-                              <Eye className="h-3.5 w-3.5" />
-                              <span>Full Preview</span>
-                            </button>
-                          </div>
-                        )}
                       </div>
                     </div>
+                    <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
+                      <div className="flex flex-wrap gap-1.5">
+                        {project.techStack.slice(0, 4).map((t) => (
+                          <Badge key={t} variant="secondary">
+                            {t}
+                          </Badge>
+                        ))}
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openProjectModal(project, currentImgIdx)}
+                      >
+                        <span>Inspect</span>
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </Card>
+                )
+              }
 
-                    {/* Card Content */}
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-                        <span className="font-medium text-cyan-400">
+              return (
+                <article
+                  key={project.id}
+                  style={{ viewTransitionName: project.vtName }}
+                  className="project-card-vt py-12 first:pt-10 last:pb-4"
+                >
+                  <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-10">
+                    {/* Narrative & Engineering Column (5 cols) */}
+                    <div
+                      className={`lg:col-span-5 ${
+                        isEven ? "lg:order-2" : "lg:order-1"
+                      }`}
+                    >
+                      <div className="flex flex-wrap items-center gap-2.5 font-mono text-xs">
+                        <span className="text-base font-bold text-primary">
+                          {project.index}
+                        </span>
+                        <span className="text-muted-foreground">/</span>
+                        <Badge variant="default">{project.categoryLabel}</Badge>
+                        {project.isNew && (
+                          <Badge variant="brass">SHIPPED {project.year}</Badge>
+                        )}
+                        <span className="ml-auto font-mono text-xs text-muted-foreground">
                           {project.role}
                         </span>
                       </div>
-                      <CardTitle className="mt-1 text-2xl">
+
+                      <h3 className="mt-4 font-display text-2xl font-extrabold leading-tight tracking-tight sm:text-3xl">
                         {project.title}
-                      </CardTitle>
-                      <p className="text-xs font-semibold text-violet-400">
+                      </h3>
+                      <p className="mt-1.5 font-mono text-xs text-[#d4a359]">
                         {project.subtitle}
                       </p>
-                      <CardDescription className="mt-2.5 text-sm">
-                        {project.description}
-                      </CardDescription>
-                    </CardHeader>
 
-                    <CardContent className="space-y-4">
-                      {/* Key Metrics Strip */}
-                      <div className="grid grid-cols-3 gap-2 rounded-xl border border-border/70 bg-secondary/35 p-3">
+                      <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                        {project.description}
+                      </p>
+
+                      {/* Architectural Telemetry Ledger */}
+                      <div className="mt-6 grid grid-cols-3 divide-x divide-border rounded-lg border border-border bg-card/60">
                         {project.metrics.map((m) => (
-                          <div key={m.label}>
-                            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                          <div key={m.label} className="p-3">
+                            <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                               {m.label}
                             </p>
-                            <p className="mt-0.5 font-mono text-xs font-bold text-foreground">
+                            <p className="mt-1 font-mono text-xs font-semibold text-foreground">
                               {m.value}
                             </p>
                           </div>
                         ))}
                       </div>
 
-                      {/* Tech Stack Pills */}
-                      <div className="flex flex-wrap gap-1.5">
+                      {/* Tech Stack Chips */}
+                      <div className="mt-5 flex flex-wrap gap-1.5">
                         {project.techStack.map((tech) => (
                           <span
                             key={tech}
-                            className="rounded-lg border border-border/80 bg-background/60 px-2.5 py-1 font-mono text-[11px] font-medium text-foreground/90"
+                            className="rounded border border-border bg-secondary/40 px-2.5 py-1 font-mono text-[11px] text-foreground/90"
                           >
                             {tech}
                           </span>
                         ))}
                       </div>
 
-                      {/* Discrete Expandable Architecture Specs (animate-element-entry-exit) */}
+                      {/* Discrete Expandable Architecture Notes (animate-element-entry-exit) */}
                       <div
                         ref={(el) => {
                           detailRefs.current[project.id] = el
                         }}
                         hidden
-                        className="project-details rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-4 text-xs leading-relaxed"
+                        className="project-details mt-5 rounded-lg border border-primary/35 bg-card p-4 text-xs leading-relaxed"
                       >
-                        <p className="font-semibold text-cyan-400">
-                          System Architecture &amp; Engineering Highlights:
-                        </p>
+                        <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-primary">
+                          Architecture &amp; Implementation Notes
+                        </div>
                         <p className="mt-1.5 text-muted-foreground">
                           {project.architectureSummary}
                         </p>
-                        <ul className="mt-2.5 space-y-1.5 text-foreground/90">
+                        <ul className="mt-3 space-y-1.5 text-foreground/90">
                           {project.highlights.map((hl) => (
                             <li key={hl} className="flex items-start gap-2">
-                              <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-cyan-400" />
+                              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                               <span>{hl}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
-                    </CardContent>
+
+                      {/* Action Buttons */}
+                      <div className="mt-6 flex flex-wrap items-center gap-3">
+                        <Button
+                          onClick={() => openProjectModal(project, currentImgIdx)}
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          <span>Case Study &amp; Fullscreen</span>
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          onClick={() => toggleCardArchitecture(project.id)}
+                          aria-expanded={isExpanded}
+                        >
+                          <ChevronDown
+                            className={`h-3.5 w-3.5 transition-transform duration-300 ${
+                              isExpanded ? "rotate-180 text-primary" : ""
+                            }`}
+                          />
+                          <span>
+                            {isExpanded
+                              ? "Hide Architecture"
+                              : "Architecture Notes"}
+                          </span>
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Interactive Visual Stage Column (7 cols) */}
+                    <div
+                      className={`lg:col-span-7 ${
+                        isEven ? "lg:order-1" : "lg:order-2"
+                      }`}
+                    >
+                      <Card className="overflow-hidden border-border bg-card p-2 sm:p-3">
+                        <div className="relative overflow-hidden rounded-lg border border-border bg-[#0a0a09]">
+                          <img
+                            src={activeImage.src}
+                            alt={activeImage.caption}
+                            loading="lazy"
+                            onClick={() =>
+                              openProjectModal(project, currentImgIdx)
+                            }
+                            className="aspect-video w-full cursor-pointer object-cover object-top transition-transform duration-500 hover:scale-[1.01]"
+                          />
+                        </div>
+
+                        {/* Caption & Multi-Screen Switcher Bar */}
+                        <div className="mt-3 flex flex-col justify-between gap-3 px-1 sm:flex-row sm:items-center">
+                          <p className="font-mono text-[11px] text-muted-foreground">
+                            <span className="text-primary">FIG {project.index}.{currentImgIdx + 1}</span>{" "}
+                            — {activeImage.caption}
+                          </p>
+
+                          {project.images.length > 1 && (
+                            <div className="flex shrink-0 items-center gap-1.5">
+                              {project.images.map((img, idx) => (
+                                <button
+                                  key={img.src}
+                                  type="button"
+                                  onClick={() =>
+                                    setCardImageIndex((prev) => ({
+                                      ...prev,
+                                      [project.id]: idx,
+                                    }))
+                                  }
+                                  className={`rounded px-2.5 py-1 font-mono text-[11px] uppercase transition-colors ${
+                                    currentImgIdx === idx
+                                      ? "bg-primary text-primary-foreground font-semibold"
+                                      : "border border-border bg-secondary/60 text-muted-foreground hover:text-foreground"
+                                  }`}
+                                >
+                                  View 0{idx + 1}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </Card>
+                    </div>
                   </div>
-
-                  <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleCardArchitecture(project.id)}
-                      aria-expanded={isExpanded}
-                      className="text-xs font-semibold text-muted-foreground hover:text-cyan-400"
-                    >
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform duration-300 ${
-                          isExpanded ? "rotate-180 text-cyan-400" : ""
-                        }`}
-                      />
-                      <span>
-                        {isExpanded
-                          ? "Hide Architecture Specs"
-                          : "Quick Architecture Specs"}
-                      </span>
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      onClick={() => openProjectModal(project, currentImgIdx)}
-                    >
-                      <Eye className="h-4 w-4" />
-                      <span>Case Study &amp; Gallery</span>
-                    </Button>
-                  </CardFooter>
-                </Card>
+                </article>
               )
             })}
           </div>
         </section>
 
         {/* =================================================================
-            ORACLE ACADEMY JAVA CERTIFICATE SECTION
+            02 // TECHNICAL LEDGER & SPECIFICATION MATRIX
            ================================================================= */}
         <section
-          id="certificate"
-          className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8"
+          id="skills"
+          className="mx-auto max-w-7xl border-b border-border px-4 py-20 sm:px-6 lg:px-8"
         >
-          <Card className="overflow-hidden border-cyan-500/30 bg-gradient-to-r from-card via-card/95 to-cyan-950/20 p-6 sm:p-10">
-            <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
-              <div className="lg:col-span-8">
-                <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1 text-xs font-semibold text-amber-300">
-                  <Award className="h-4 w-4" />
-                  <span>{CERTIFICATE_DATA.credentialType}</span>
+          <div className="flex flex-col justify-between gap-6 border-b border-border pb-8 lg:flex-row lg:items-end">
+            <div>
+              <div className="font-mono text-xs font-semibold uppercase tracking-widest text-primary">
+                02 // TECHNICAL LEDGER
+              </div>
+              <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
+                Engineering Stack{" "}
+                <span className="font-serif-editorial italic font-normal text-muted-foreground">
+                  &amp; Capabilities
+                </span>
+              </h2>
+            </div>
+            <p className="max-w-md text-sm text-muted-foreground">
+              Every tool listed below is actively used in the production repositories
+              featured above—spanning web platforms, Unity 2D C# games, and voice bots.
+            </p>
+          </div>
+
+          {/* 4-Row Architectural Specification Table */}
+          <div className="divide-y divide-border">
+            {SKILL_DOMAINS.map((domain) => (
+              <div
+                key={domain.id}
+                className="grid grid-cols-1 gap-6 py-8 lg:grid-cols-12 lg:items-start"
+              >
+                <div className="lg:col-span-4">
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-mono text-xs font-bold text-primary">
+                      {domain.index} /
+                    </span>
+                    <h3 className="font-display text-xl font-bold">
+                      {domain.title}
+                    </h3>
+                  </div>
+                  <p className="mt-2 font-mono text-[11px] text-[#d4a359]">
+                    Production: {domain.appliedIn}
+                  </p>
                 </div>
 
-                <h2 className="mt-4 font-display text-2xl font-extrabold sm:text-3xl">
-                  {CERTIFICATE_DATA.title}
-                </h2>
-                <p className="mt-1 text-sm font-semibold text-cyan-400">
-                  Issued by {CERTIFICATE_DATA.issuer} • Completed{" "}
-                  {CERTIFICATE_DATA.date}
-                </p>
-                <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
-                  {CERTIFICATE_DATA.description}
-                </p>
+                <div className="lg:col-span-4">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {domain.summary}
+                  </p>
+                </div>
 
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {CERTIFICATE_DATA.skillsVerified.map((skill) => (
-                    <Badge key={skill} variant="secondary">
-                      <Check className="h-3 w-3 text-emerald-400" />
-                      <span>{skill}</span>
-                    </Badge>
+                <div className="flex flex-wrap gap-2 lg:col-span-4">
+                  {domain.items.map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-md border border-border bg-card px-3 py-1.5 font-mono text-xs font-medium text-foreground"
+                    >
+                      {item}
+                    </span>
                   ))}
                 </div>
               </div>
+            ))}
+          </div>
 
-              <div className="flex flex-col items-stretch justify-center gap-3 rounded-2xl border border-border/70 bg-background/60 p-6 text-center lg:col-span-4">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 text-white shadow-lg shadow-amber-500/25">
-                  <FileText className="h-8 w-8" />
+          {/* Accessible Specification Ticker Strip (motion guide) */}
+          <div className="mt-8 rounded-xl border border-border bg-card/50 p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                CONTINUOUS STACK INDEX
+              </span>
+              <button
+                type="button"
+                onClick={() => setMarqueePaused((prev) => !prev)}
+                aria-pressed={marqueePaused}
+                className="inline-flex items-center gap-1.5 rounded border border-border bg-background px-2.5 py-1 font-mono text-[11px] uppercase text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
+              >
+                {marqueePaused ? (
+                  <>
+                    <Play className="h-3 w-3 text-primary" />
+                    <span>Resume Ticker</span>
+                  </>
+                ) : (
+                  <>
+                    <Pause className="h-3 w-3 text-primary" />
+                    <span>Pause Ticker</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="overflow-hidden border-t border-border pt-3">
+              <div
+                className="marquee-track gap-6"
+                data-paused={marqueePaused ? "true" : "false"}
+              >
+                {[...TECH_MARQUEE_ITEMS, ...TECH_MARQUEE_ITEMS].map(
+                  (item, index) => (
+                    <div
+                      key={`${item}-${index}`}
+                      className="inline-flex items-center gap-3 font-mono text-xs text-muted-foreground"
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                      <span className="text-foreground">{item}</span>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =================================================================
+            03 // CREDENTIALS & ACADEMIC CERTIFICATION
+           ================================================================= */}
+        <section
+          id="certificate"
+          className="mx-auto max-w-7xl border-b border-border px-4 py-20 sm:px-6 lg:px-8"
+        >
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
+            <div className="lg:col-span-8">
+              <div className="font-mono text-xs font-semibold uppercase tracking-widest text-primary">
+                03 // VERIFIED CREDENTIAL
+              </div>
+              <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
+                {CERTIFICATE_DATA.title}
+              </h2>
+              <p className="mt-2 font-mono text-xs text-[#d4a359]">
+                ISSUED BY {CERTIFICATE_DATA.issuer.toUpperCase()} —{" "}
+                {CERTIFICATE_DATA.date.toUpperCase()}
+              </p>
+              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                {CERTIFICATE_DATA.description}
+              </p>
+
+              <div className="mt-6 flex flex-wrap gap-2">
+                {CERTIFICATE_DATA.skillsVerified.map((skill) => (
+                  <Badge key={skill} variant="secondary">
+                    <Check className="h-3 w-3 text-[#4d9375]" />
+                    <span>{skill}</span>
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            <div className="lg:col-span-4">
+              <Card className="p-6">
+                <div className="flex items-center justify-between border-b border-border pb-3 font-mono text-xs text-muted-foreground">
+                  <span>ORACLE ACADEMY</span>
+                  <Award className="h-4 w-4 text-[#d4a359]" />
                 </div>
-                <p className="font-display text-lg font-bold">
-                  Oracle Academy Credential
+                <p className="mt-4 font-display text-lg font-bold">
+                  Official Certificate PDF
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  Official PDF certificate awarded to Steven Floyd Sendrijas
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Awarded to Steven Floyd Sendrijas upon completion of Java
+                  Fundamentals.
                 </p>
                 <a
                   href={CERTIFICATE_DATA.pdfUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-2"
+                  className="mt-5 block"
                 >
                   <Button className="w-full">
-                    <ExternalLink className="h-4 w-4" />
-                    <span>Open Official Certificate PDF</span>
+                    <FileText className="h-4 w-4" />
+                    <span>Open Official Certificate</span>
+                    <ArrowUpRight className="h-4 w-4" />
                   </Button>
                 </a>
-              </div>
+              </Card>
             </div>
-          </Card>
+          </div>
         </section>
 
         {/* =================================================================
-            CONTACT SECTION
+            04 // DIRECT CORRESPONDENCE & CONTACT
            ================================================================= */}
         <section
           id="contact"
           className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8"
         >
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-            {/* Contact Details */}
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+            {/* Left 5 Columns: Direct Channels */}
             <div className="lg:col-span-5">
-              <Badge variant="default" className="mb-3">
-                <Mail className="h-3.5 w-3.5" />
-                <span>Get In Touch</span>
-              </Badge>
-              <h2 className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-                Let&apos;s Build Something Exceptional Together
+              <div className="font-mono text-xs font-semibold uppercase tracking-widest text-primary">
+                04 // CORRESPONDENCE
+              </div>
+              <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
+                Initiate a{" "}
+                <span className="font-serif-editorial italic font-normal text-primary">
+                  Conversation.
+                </span>
               </h2>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Whether you need a full-stack React &amp; TypeScript platform, a custom
-                Unity 2D game, or a real-time backend service, feel free to reach out
-                directly.
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                Available for full-stack web development, Unity 2D game engineering,
+                and custom backend or bot architecture roles.
               </p>
 
-              <div className="mt-8 space-y-4">
-                <Card className="flex items-center justify-between p-4">
-                  <div className="flex items-center gap-3.5">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400">
-                      <Mail className="h-5 w-5" />
-                    </div>
+              <div className="mt-8 divide-y divide-border border-y border-border">
+                <div className="flex items-center justify-between py-4">
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-4 w-4 text-primary" />
                     <div>
-                      <p className="text-xs font-medium text-muted-foreground">
-                        Email Address
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        DIRECT EMAIL
                       </p>
                       <a
                         href={`mailto:${PROFILE_DATA.email}`}
-                        className="font-mono text-sm font-semibold hover:text-cyan-400"
+                        className="font-mono text-sm font-semibold hover:text-primary"
                       >
                         {PROFILE_DATA.email}
                       </a>
@@ -1294,7 +1154,7 @@ export function App() {
                   >
                     {copiedField === "email" ? (
                       <>
-                        <Check className="h-3.5 w-3.5 text-emerald-400" />
+                        <Check className="h-3.5 w-3.5 text-[#4d9375]" />
                         <span>Copied</span>
                       </>
                     ) : (
@@ -1304,20 +1164,18 @@ export function App() {
                       </>
                     )}
                   </Button>
-                </Card>
+                </div>
 
-                <Card className="flex items-center justify-between p-4">
-                  <div className="flex items-center gap-3.5">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/15 text-violet-400">
-                      <Phone className="h-5 w-5" />
-                    </div>
+                <div className="flex items-center justify-between py-4">
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-4 w-4 text-primary" />
                     <div>
-                      <p className="text-xs font-medium text-muted-foreground">
-                        Phone / Mobile
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        PHONE / MOBILE
                       </p>
                       <a
                         href={`tel:${PROFILE_DATA.phone.replace(/\s+/g, "")}`}
-                        className="font-mono text-sm font-semibold hover:text-cyan-400"
+                        className="font-mono text-sm font-semibold hover:text-primary"
                       >
                         {PROFILE_DATA.phone}
                       </a>
@@ -1330,7 +1188,7 @@ export function App() {
                   >
                     {copiedField === "phone" ? (
                       <>
-                        <Check className="h-3.5 w-3.5 text-emerald-400" />
+                        <Check className="h-3.5 w-3.5 text-[#4d9375]" />
                         <span>Copied</span>
                       </>
                     ) : (
@@ -1340,22 +1198,20 @@ export function App() {
                       </>
                     )}
                   </Button>
-                </Card>
+                </div>
 
-                <Card className="flex items-center justify-between p-4">
-                  <div className="flex items-center gap-3.5">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
-                      <Github className="h-5 w-5" />
-                    </div>
+                <div className="flex items-center justify-between py-4">
+                  <div className="flex items-center gap-3">
+                    <Github className="h-4 w-4 text-primary" />
                     <div>
-                      <p className="text-xs font-medium text-muted-foreground">
-                        GitHub Profile
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        GITHUB REPOSITORIES
                       </p>
                       <a
                         href={PROFILE_DATA.github}
                         target="_blank"
                         rel="noreferrer"
-                        className="font-mono text-sm font-semibold hover:text-cyan-400"
+                        className="font-mono text-sm font-semibold hover:text-primary"
                       >
                         github.com/steven23lz
                       </a>
@@ -1367,37 +1223,40 @@ export function App() {
                     rel="noreferrer"
                   >
                     <Button variant="outline" size="sm">
-                      <ExternalLink className="h-3.5 w-3.5" />
-                      <span>Visit</span>
+                      <span>Profile</span>
+                      <ArrowUpRight className="h-3.5 w-3.5" />
                     </Button>
                   </a>
-                </Card>
+                </div>
               </div>
             </div>
 
-            {/* Interactive Contact Form */}
+            {/* Right 7 Columns: Message Form */}
             <div className="lg:col-span-7">
               <Card className="p-6 sm:p-8">
-                <CardTitle className="text-xl">Send a Direct Message</CardTitle>
-                <CardDescription className="mt-1">
-                  Fill out the form below to open a pre-addressed message directly to{" "}
-                  {PROFILE_DATA.email}.
-                </CardDescription>
+                <div className="border-b border-border pb-4">
+                  <h3 className="font-display text-xl font-bold">
+                    Direct Dispatch
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Composes a formatted inquiry directly to {PROFILE_DATA.email}.
+                  </p>
+                </div>
 
                 <form onSubmit={handleContactSubmit} className="mt-6 space-y-4">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <label
                         htmlFor="contact-name"
-                        className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                        className="block font-mono text-[11px] uppercase tracking-wider text-muted-foreground"
                       >
-                        Your Name
+                        Name
                       </label>
                       <input
                         id="contact-name"
                         type="text"
                         required
-                        placeholder="Juan Dela Cruz"
+                        placeholder="Your name"
                         value={contactForm.name}
                         onChange={(e) =>
                           setContactForm((prev) => ({
@@ -1405,21 +1264,21 @@ export function App() {
                             name: e.target.value,
                           }))
                         }
-                        className="mt-1.5 w-full rounded-xl border border-border bg-background/80 px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-cyan-500"
+                        className="mt-1.5 w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="contact-email"
-                        className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                        className="block font-mono text-[11px] uppercase tracking-wider text-muted-foreground"
                       >
-                        Your Email
+                        Return Email
                       </label>
                       <input
                         id="contact-email"
                         type="email"
                         required
-                        placeholder="you@example.com"
+                        placeholder="name@company.com"
                         value={contactForm.email}
                         onChange={(e) =>
                           setContactForm((prev) => ({
@@ -1427,7 +1286,7 @@ export function App() {
                             email: e.target.value,
                           }))
                         }
-                        className="mt-1.5 w-full rounded-xl border border-border bg-background/80 px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-cyan-500"
+                        className="mt-1.5 w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary"
                       />
                     </div>
                   </div>
@@ -1435,15 +1294,15 @@ export function App() {
                   <div>
                     <label
                       htmlFor="contact-subject"
-                      className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                      className="block font-mono text-[11px] uppercase tracking-wider text-muted-foreground"
                     >
-                      Subject
+                      Subject / Role
                     </label>
                     <input
                       id="contact-subject"
                       type="text"
                       required
-                      placeholder="Full-Stack / Game Development Opportunity"
+                      placeholder="Software Engineering / Project Inquiry"
                       value={contactForm.subject}
                       onChange={(e) =>
                         setContactForm((prev) => ({
@@ -1451,22 +1310,22 @@ export function App() {
                           subject: e.target.value,
                         }))
                       }
-                      className="mt-1.5 w-full rounded-xl border border-border bg-background/80 px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-cyan-500"
+                      className="mt-1.5 w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary"
                     />
                   </div>
 
                   <div>
                     <label
                       htmlFor="contact-message"
-                      className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                      className="block font-mono text-[11px] uppercase tracking-wider text-muted-foreground"
                     >
-                      Project Details or Message
+                      Brief
                     </label>
                     <textarea
                       id="contact-message"
                       rows={4}
                       required
-                      placeholder="Tell me about your project, timeline, or role..."
+                      placeholder="Outline your project scope, stack, or role details..."
                       value={contactForm.message}
                       onChange={(e) =>
                         setContactForm((prev) => ({
@@ -1474,25 +1333,25 @@ export function App() {
                           message: e.target.value,
                         }))
                       }
-                      className="mt-1.5 w-full rounded-xl border border-border bg-background/80 px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-cyan-500"
+                      className="mt-1.5 w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary"
                     />
                   </div>
 
                   <div className="flex items-center justify-between gap-4 pt-2">
                     {formSubmitted ? (
-                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
+                      <span className="inline-flex items-center gap-1.5 font-mono text-xs text-[#4d9375]">
                         <Check className="h-4 w-4" />
-                        Opening your mail client...
+                        Opening mail client...
                       </span>
                     ) : (
-                      <span className="text-xs text-muted-foreground">
-                        Typically responds within 24 hours.
+                      <span className="font-mono text-[11px] text-muted-foreground">
+                        CEBU, PH (UTC+8)
                       </span>
                     )}
 
                     <Button type="submit" size="lg">
-                      <Send className="h-4 w-4" />
-                      <span>Send Message</span>
+                      <Send className="h-3.5 w-3.5" />
+                      <span>Send Dispatch</span>
                     </Button>
                   </div>
                 </form>
@@ -1505,31 +1364,23 @@ export function App() {
       {/* =================================================================
           FOOTER
          ================================================================= */}
-      <footer className="border-t border-border/60 bg-secondary/20 py-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-violet-600 font-display text-xs font-extrabold text-white">
-              SF
-            </div>
-            <p className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()}{" "}
-              <strong className="text-foreground">{PROFILE_DATA.name}</strong>.
-              Built with React 18, TypeScript, shadcn/ui, Tailwind CSS &amp; Framer
-              Motion.
-            </p>
-          </div>
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <a href="#home" className="hover:text-cyan-400">
-              Back to Top ↑
+      <footer className="border-t border-border bg-card/40 py-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 font-mono text-xs text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
+          <p>
+            © {new Date().getFullYear()} {PROFILE_DATA.name}. Engineered with
+            React 18, TypeScript, shadcn/ui &amp; Tailwind CSS.
+          </p>
+          <div className="flex items-center gap-6">
+            <a href="#home" className="hover:text-primary">
+              TOP ↑
             </a>
-            <span>•</span>
             <a
               href={PROFILE_DATA.github}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-cyan-400"
+              className="hover:text-primary"
             >
-              GitHub
+              GITHUB ↗
             </a>
           </div>
         </div>
@@ -1545,18 +1396,22 @@ export function App() {
           closedby: "any",
         } as React.DialogHTMLAttributes<HTMLDialogElement>)}
         aria-labelledby="case-study-modal-title"
-        className="case-study-dialog m-auto max-h-[90vh] w-[94vw] max-w-4xl overflow-y-auto rounded-3xl border border-border/80 bg-card p-0 text-card-foreground shadow-2xl outline-none"
+        className="case-study-dialog m-auto max-h-[90vh] w-[94vw] max-w-5xl overflow-y-auto rounded-xl border border-border bg-card p-0 text-card-foreground shadow-2xl outline-none"
       >
         {selectedProject && (
           <div className="p-6 sm:p-8">
-            <div className="flex items-start justify-between gap-4 border-b border-border/60 pb-4">
+            <div className="flex items-start justify-between gap-4 border-b border-border pb-4">
               <div>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
+                  <span className="font-bold text-primary">
+                    CASE STUDY // {selectedProject.index}
+                  </span>
+                  <span>•</span>
                   <Badge variant="default">
                     {selectedProject.categoryLabel}
                   </Badge>
-                  <span className="font-mono text-xs text-muted-foreground">
-                    {selectedProject.year} • {selectedProject.role}
+                  <span className="text-muted-foreground">
+                    {selectedProject.year} — {selectedProject.role}
                   </span>
                 </div>
                 <h3
@@ -1565,7 +1420,7 @@ export function App() {
                 >
                   {selectedProject.title}
                 </h3>
-                <p className="mt-1 text-xs font-semibold text-cyan-400">
+                <p className="mt-1 font-mono text-xs text-[#d4a359]">
                   {selectedProject.subtitle}
                 </p>
               </div>
@@ -1575,14 +1430,13 @@ export function App() {
                 size="icon"
                 onClick={closeProjectModal}
                 aria-label="Close case study modal"
-                className="shrink-0 rounded-full"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </Button>
             </div>
 
             {/* Interactive Screenshot Viewer */}
-            <div className="mt-6 overflow-hidden rounded-2xl border border-border/80 bg-slate-950">
+            <div className="mt-6 overflow-hidden rounded-lg border border-border bg-[#080807]">
               <img
                 src={
                   (
@@ -1596,10 +1450,10 @@ export function App() {
                     selectedProject.images[0]
                   ).caption
                 }
-                className="max-h-[440px] w-full object-contain"
+                className="max-h-[480px] w-full object-contain"
               />
-              <div className="flex flex-col items-start justify-between gap-3 border-t border-white/10 bg-slate-900/90 px-4 py-3 sm:flex-row sm:items-center">
-                <p className="text-xs text-slate-300">
+              <div className="flex flex-col items-start justify-between gap-3 border-t border-border bg-card px-4 py-3 sm:flex-row sm:items-center">
+                <p className="font-mono text-xs text-muted-foreground">
                   {
                     (
                       selectedProject.images[modalImageIdx] ??
@@ -1615,13 +1469,13 @@ export function App() {
                         key={img.src}
                         type="button"
                         onClick={() => setModalImageIdx(i)}
-                        className={`rounded-lg px-3 py-1 text-xs font-semibold transition-colors ${
+                        className={`rounded px-3 py-1 font-mono text-xs uppercase transition-colors ${
                           modalImageIdx === i
-                            ? "bg-cyan-500 text-slate-950"
-                            : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                            ? "bg-primary text-primary-foreground font-semibold"
+                            : "border border-border bg-secondary text-muted-foreground hover:text-foreground"
                         }`}
                       >
-                        View {i + 1}
+                        Screen 0{i + 1}
                       </button>
                     ))}
                   </div>
@@ -1630,34 +1484,34 @@ export function App() {
             </div>
 
             {/* Case Study Details */}
-            <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-              <div className="space-y-4 md:col-span-2">
+            <div className="mt-6 grid grid-cols-1 gap-8 md:grid-cols-12">
+              <div className="space-y-5 md:col-span-8">
                 <div>
-                  <h4 className="font-display text-base font-bold text-foreground">
-                    Overview &amp; Problem Solved
+                  <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
+                    01 / Problem &amp; System Scope
                   </h4>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                     {selectedProject.description}
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="font-display text-base font-bold text-foreground">
-                    System Architecture
+                  <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
+                    02 / Architecture &amp; Engineering
                   </h4>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                     {selectedProject.architectureSummary}
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="font-display text-base font-bold text-foreground">
-                    Key Technical Achievements
+                  <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
+                    03 / Key Technical Deliverables
                   </h4>
-                  <ul className="mt-2 space-y-2 text-sm text-foreground/90">
+                  <ul className="mt-2.5 space-y-2 text-sm text-foreground/90">
                     {selectedProject.highlights.map((item) => (
                       <li key={item} className="flex items-start gap-2.5">
-                        <Check className="mt-1 h-4 w-4 shrink-0 text-cyan-400" />
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                         <span>{item}</span>
                       </li>
                     ))}
@@ -1665,20 +1519,17 @@ export function App() {
                 </div>
               </div>
 
-              <div className="space-y-4 rounded-2xl border border-border/70 bg-secondary/30 p-5">
-                <h4 className="font-display text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                  Project Telemetry
+              <div className="space-y-4 rounded-lg border border-border bg-secondary/30 p-5 md:col-span-4">
+                <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  System Telemetry
                 </h4>
-                <div className="space-y-3">
+                <div className="divide-y divide-border border-y border-border">
                   {selectedProject.metrics.map((m) => (
-                    <div
-                      key={m.label}
-                      className="rounded-xl border border-border/60 bg-background/60 p-3"
-                    >
-                      <p className="text-[11px] text-muted-foreground">
+                    <div key={m.label} className="py-2.5">
+                      <p className="font-mono text-[10px] uppercase text-muted-foreground">
                         {m.label}
                       </p>
-                      <p className="font-mono text-sm font-bold text-cyan-400">
+                      <p className="mt-0.5 font-mono text-sm font-bold text-foreground">
                         {m.value}
                       </p>
                     </div>
@@ -1686,14 +1537,14 @@ export function App() {
                 </div>
 
                 <div className="pt-2">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Technologies Used
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    Production Stack
                   </p>
                   <div className="mt-2.5 flex flex-wrap gap-1.5">
                     {selectedProject.techStack.map((t) => (
                       <span
                         key={t}
-                        className="rounded-lg border border-border bg-background px-2.5 py-1 font-mono text-[11px] font-medium"
+                        className="rounded border border-border bg-card px-2.5 py-1 font-mono text-[11px]"
                       >
                         {t}
                       </span>
@@ -1703,9 +1554,9 @@ export function App() {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end border-t border-border/60 pt-4">
+            <div className="mt-6 flex justify-end border-t border-border pt-4">
               <Button variant="outline" onClick={closeProjectModal}>
-                Close Case Study (Esc)
+                Close Dossier (Esc)
               </Button>
             </div>
           </div>
