@@ -1,10 +1,18 @@
 export type ProjectCategory = "all" | "web" | "games" | "bots"
 
+export interface ProjectImageItem {
+  src: string
+  label: string
+  caption: string
+}
+
 export interface ProjectItem {
   id: string
   num: string
   vtName: string
   title: string
+  subtitle: string
+  windowUrl: string
   category: Exclude<ProjectCategory, "all">
   tags: string[]
   description: string
@@ -14,7 +22,7 @@ export interface ProjectItem {
   previewType: "single" | "duo" | "mobile"
   overlayIcon: string
   overlayLabel: string
-  images: { src: string; caption: string }[]
+  images: ProjectImageItem[]
 }
 
 export interface SkillCategoryItem {
@@ -54,6 +62,8 @@ export const PROJECTS_DATA: ProjectItem[] = [
     num: "01",
     vtName: "project-trivia-attack",
     title: "Trivia Attack — 2D Educational RPG",
+    subtitle: "Unity 6 (URP 2D) • C# Turn-Based Quiz RPG",
+    windowUrl: "unity://trivia-attack.rpg/world-select",
     category: "games",
     tags: ["Unity 6 (URP 2D)", "C#", "SpriteAnimator", "JSON Data"],
     description:
@@ -75,14 +85,16 @@ export const PROJECTS_DATA: ProjectItem[] = [
     overlayLabel: "Battle & Main Menu Views",
     images: [
       {
-        src: "/assets/trivia-menu.png",
-        caption:
-          "Trivia Attack Main Menu — Doctorate Quill showcase, 6 game mode cards, and 22/22 Honours completion",
-      },
-      {
         src: "/assets/trivia-battle.png",
+        label: "Screen 1: Combat Quiz",
         caption:
           "Trivia Attack Battle Scene — World 4 Globe Garden encounter with speed-bonus timer and 3 equipped power-ups",
+      },
+      {
+        src: "/assets/trivia-menu.png",
+        label: "Screen 2: Main Menu",
+        caption:
+          "Trivia Attack Main Menu — Doctorate Quill showcase, 6 game mode cards, and 22/22 Honours completion",
       },
     ],
   },
@@ -91,6 +103,8 @@ export const PROJECTS_DATA: ProjectItem[] = [
     num: "02",
     vtName: "project-overview-streaming",
     title: "OverView — Movie, TV & Anime Streaming",
+    subtitle: "React 18 • TypeScript • HLS Stream Proxy",
+    windowUrl: "https://overview-streaming.app/watch",
     category: "web",
     tags: ["React 18", "TypeScript", "Node.js", "PostgreSQL", "HLS.js"],
     description:
@@ -113,11 +127,13 @@ export const PROJECTS_DATA: ProjectItem[] = [
     images: [
       {
         src: "/assets/overview-home.png",
+        label: "Screen 1: Catalog",
         caption:
           "OverView Discovery Catalog — Featured hero banner and unified Movies, TV Series & Anime browse grid",
       },
       {
         src: "/assets/overview-player.png",
+        label: "Screen 2: HLS Player",
         caption:
           "OverView Universal HLS Player — Automated Stream Discovery Engine active with 1080p source selector",
       },
@@ -128,6 +144,8 @@ export const PROJECTS_DATA: ProjectItem[] = [
     num: "03",
     vtName: "project-spotibai-bot",
     title: "SpotiBAI — Discord Music & Bisaya AI Bot",
+    subtitle: "Discord.js v14 • 48kHz Opus • Bisaya AI",
+    windowUrl: "discord://mga-bushit/dota-pisot/spotibai",
     category: "bots",
     tags: ["TypeScript", "Discord.js v14", "@discordjs/voice", "PostgreSQL", "Prisma"],
     description:
@@ -149,14 +167,16 @@ export const PROJECTS_DATA: ProjectItem[] = [
     overlayLabel: "Live Discord & DJ Controller Views",
     images: [
       {
-        src: "/assets/discord-dashboard.png",
-        caption:
-          "SpotiBAI Live DJ Controller — Real-time FFmpeg DSP audio filter presets and Adaptive Theme Engine",
-      },
-      {
         src: "/assets/discord-bot.png",
+        label: "Screen 1: Live Discord VC",
         caption:
           "SpotiBAI Live in Discord (#Dota Pisot / Mga Bushit) — Active voice session with Haruto and queue embeds",
+      },
+      {
+        src: "/assets/discord-dashboard.png",
+        label: "Screen 2: DJ Controller",
+        caption:
+          "SpotiBAI Live DJ Controller — Real-time FFmpeg DSP audio filter presets and Adaptive Theme Engine",
       },
     ],
   },
@@ -165,6 +185,8 @@ export const PROJECTS_DATA: ProjectItem[] = [
     num: "04",
     vtName: "project-business-permit",
     title: "Business Permit System",
+    subtitle: "Laravel • PHP • MySQL • GovTech Workflow",
+    windowUrl: "https://lgu-permits.gov.local/dashboard",
     category: "web",
     tags: ["PHP", "Laravel", "MySQL", "Blade"],
     description:
@@ -186,6 +208,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     images: [
       {
         src: "/assets/Business Permit.png",
+        label: "Admin & Permit Portal",
         caption: "Business Permit System — Administrative dashboard and permit workflow",
       },
     ],
@@ -195,6 +218,8 @@ export const PROJECTS_DATA: ProjectItem[] = [
     num: "05",
     vtName: "project-clinic-management",
     title: "Clinic Management System",
+    subtitle: "Laravel • React • PostgreSQL • Healthcare",
+    windowUrl: "https://enlogada-clinic.app/patient-portal",
     category: "web",
     tags: ["Laravel", "PostgreSQL", "React", "Tailwind"],
     description:
@@ -216,12 +241,14 @@ export const PROJECTS_DATA: ProjectItem[] = [
     overlayLabel: "Login and Patient Views",
     images: [
       {
-        src: "/assets/Login.png",
-        caption: "Enlogada Ultrasound & Diagnostic Clinic — Staff login screen",
+        src: "/assets/Patient.png",
+        label: "Screen 1: Patient Portal",
+        caption: "Clinic Management System — Patient records and appointment dashboard",
       },
       {
-        src: "/assets/Patient.png",
-        caption: "Clinic Management System — Patient records and appointment dashboard",
+        src: "/assets/Login.png",
+        label: "Screen 2: Staff Login",
+        caption: "Enlogada Ultrasound & Diagnostic Clinic — Staff login screen",
       },
     ],
   },
@@ -230,6 +257,8 @@ export const PROJECTS_DATA: ProjectItem[] = [
     num: "06",
     vtName: "project-cinebai-mobile",
     title: "CineBai — Cinema Ticketing App",
+    subtitle: "React Native • Node.js • QR Seat Booking",
+    windowUrl: "cinebai://mobile-app/seat-reservation",
     category: "games",
     tags: ["React Native", "Node.js", "Express", "PostgreSQL"],
     description:
@@ -252,6 +281,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     images: [
       {
         src: "/assets/mobilee.png",
+        label: "Mobile Seat & QR Flow",
         caption: "CineBai — Mobile cinema seat reservation and QR ticketing screens",
       },
     ],

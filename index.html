@@ -1,24 +1,32 @@
 <!DOCTYPE html>
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- MANDATORY: Declare support for both light and dark themes -->
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      try {
+        document.querySelector('meta[name="color-scheme"]').content =
+          localStorage.getItem("color-scheme") ?? "light";
+      } catch (e) {}
+    </script>
     <title>Steven Floyd Sendrijas — IT Student &amp; Full-Stack Developer</title>
     <meta
       name="description"
       content="Portfolio of Steven Floyd Sendrijas — IT Student and Full-Stack Web, Game & Mobile Developer at STI College."
     />
-    <meta name="theme-color" content="#0a0b10" />
+    <meta name="theme-color" content="#f8fafc" />
     <link
       rel="icon"
       type="image/svg+xml"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2313151e'/><text x='50%' y='64%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='38' fill='%233b82f6'>&lt;SFS/&gt;</text></svg>"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232563eb'/><text x='50%' y='64%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='38' fill='%23ffffff'>&lt;SFS/&gt;</text></svg>"
     />
-    <!-- Google Fonts: Syne (display) + DM Sans (body) -->
+    <!-- Google Fonts: Syne (Display) + Inter (Body) + JetBrains Mono (Window Chrome & Tags) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Syne:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
     <!-- Font Awesome 6.5.0 -->
