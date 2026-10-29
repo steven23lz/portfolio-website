@@ -3,16 +3,17 @@
 @tailwind utilities;
 
 /* =====================================================
-   OPTION 5: NORDIC DAYLIGHT (LIGHT-FIRST + DARK TOGGLE)
+   OPTION 5: NORDIC DAYLIGHT (WHITE) + SLEEK OBSIDIAN DARK MODE
    Modern Web Guidance: dark-mode, dark-mode-toggle, color
    ===================================================== */
 :root {
-  /* Raw Light Tokens (Nordic Daylight) */
+  /* Raw Light Tokens (Nordic Daylight — Crisp White & Alabaster) */
   --bg-primary-light: #f8fafc;
   --bg-secondary-light: #f1f5f9;
   --bg-card-light: #ffffff;
   --bg-window-bar-light: #f1f5f9;
   --bg-stage-light: #0f172a;
+  --bg-pill-light: #f1f5f9;
 
   --text-primary-light: #0f172a;
   --text-secondary-light: #334155;
@@ -24,28 +25,37 @@
   --brand-warm-light: #d97706;
 
   --border-subtle-light: #e2e8f0;
-  --border-strong-light: #94a3b8;
+  --border-strong-light: #cbd5e1;
   --header-glass-light: rgba(248, 250, 252, 0.88);
+  --shadow-card-light: 0 10px 30px -10px rgba(15, 23, 42, 0.07),
+    0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --shadow-hover-light: 0 20px 40px -12px rgba(37, 99, 235, 0.14),
+    0 4px 12px -2px rgba(15, 23, 42, 0.06);
 
-  /* Raw Dark Tokens (Nordic Midnight) */
-  --bg-primary-dark: #0b0f19;
-  --bg-secondary-dark: #111827;
-  --bg-card-dark: #161f30;
-  --bg-window-bar-dark: #1e293b;
-  --bg-stage-dark: #090d16;
+  /* Raw Dark Tokens (Sleek Obsidian & Sapphire — High-Craft Dark Mode) */
+  --bg-primary-dark: #090b10;
+  --bg-secondary-dark: #0d1017;
+  --bg-card-dark: #121621;
+  --bg-window-bar-dark: #0b0e15;
+  --bg-stage-dark: #06080c;
+  --bg-pill-dark: #181d2c;
 
   --text-primary-dark: #f8fafc;
   --text-secondary-dark: #cbd5e1;
   --text-muted-dark: #94a3b8;
 
   --brand-primary-dark: #3b82f6;
-  --brand-primary-hover-dark: #2563eb;
-  --brand-secondary-dark: #14b8a6;
+  --brand-primary-hover-dark: #60a5fa;
+  --brand-secondary-dark: #10b981;
   --brand-warm-dark: #f59e0b;
 
-  --border-subtle-dark: #263349;
-  --border-strong-dark: #475569;
-  --header-glass-dark: rgba(11, 15, 25, 0.88);
+  --border-subtle-dark: #1e2436;
+  --border-strong-dark: #283048;
+  --header-glass-dark: rgba(9, 11, 16, 0.86);
+  --shadow-card-dark: 0 18px 36px -14px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  --shadow-hover-dark: 0 24px 48px -12px rgba(59, 130, 246, 0.22),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.09);
 
   /* Default Fallback (Nordic Daylight Light-First) */
   --bg-primary: var(--bg-primary-light);
@@ -53,6 +63,7 @@
   --bg-card: var(--bg-card-light);
   --bg-window-bar: var(--bg-window-bar-light);
   --bg-stage: var(--bg-stage-light);
+  --bg-pill: var(--bg-pill-light);
   --text-primary: var(--text-primary-light);
   --text-secondary: var(--text-secondary-light);
   --text-muted: var(--text-muted-light);
@@ -63,6 +74,8 @@
   --border-subtle: var(--border-subtle-light);
   --border-strong: var(--border-strong-light);
   --header-glass: var(--header-glass-light);
+  --shadow-card: var(--shadow-card-light);
+  --shadow-hover: var(--shadow-hover-light);
   --scrollbar-track: #e2e8f0;
   --scrollbar-thumb: #64748b;
 
@@ -73,6 +86,7 @@
     --bg-card: var(--bg-card-dark);
     --bg-window-bar: var(--bg-window-bar-dark);
     --bg-stage: var(--bg-stage-dark);
+    --bg-pill: var(--bg-pill-dark);
     --text-primary: var(--text-primary-dark);
     --text-secondary: var(--text-secondary-dark);
     --text-muted: var(--text-muted-dark);
@@ -83,8 +97,10 @@
     --border-subtle: var(--border-subtle-dark);
     --border-strong: var(--border-strong-dark);
     --header-glass: var(--header-glass-dark);
-    --scrollbar-track: #111827;
-    --scrollbar-thumb: #475569;
+    --shadow-card: var(--shadow-card-dark);
+    --shadow-hover: var(--shadow-hover-dark);
+    --scrollbar-track: #0d1017;
+    --scrollbar-thumb: #334155;
   }
 
   /* Modern light-dark() automatic resolution */
@@ -94,6 +110,7 @@
     --bg-card: light-dark(var(--bg-card-light), var(--bg-card-dark));
     --bg-window-bar: light-dark(var(--bg-window-bar-light), var(--bg-window-bar-dark));
     --bg-stage: light-dark(var(--bg-stage-light), var(--bg-stage-dark));
+    --bg-pill: light-dark(var(--bg-pill-light), var(--bg-pill-dark));
     --text-primary: light-dark(var(--text-primary-light), var(--text-primary-dark));
     --text-secondary: light-dark(var(--text-secondary-light), var(--text-secondary-dark));
     --text-muted: light-dark(var(--text-muted-light), var(--text-muted-dark));
@@ -107,8 +124,8 @@
     --border-subtle: light-dark(var(--border-subtle-light), var(--border-subtle-dark));
     --border-strong: light-dark(var(--border-strong-light), var(--border-strong-dark));
     --header-glass: light-dark(var(--header-glass-light), var(--header-glass-dark));
-    --scrollbar-track: light-dark(#e2e8f0, #111827);
-    --scrollbar-thumb: light-dark(#64748b, #475569);
+    --scrollbar-track: light-dark(#e2e8f0, #0d1017);
+    --scrollbar-thumb: light-dark(#64748b, #334155);
   }
 
   /* MANDATORY: Apply color-scheme to :root and map <meta name="color-scheme"> override */
@@ -124,6 +141,7 @@
     --bg-card: var(--bg-card-dark);
     --bg-window-bar: var(--bg-window-bar-dark);
     --bg-stage: var(--bg-stage-dark);
+    --bg-pill: var(--bg-pill-dark);
     --text-primary: var(--text-primary-dark);
     --text-secondary: var(--text-secondary-dark);
     --text-muted: var(--text-muted-dark);
@@ -134,6 +152,8 @@
     --border-subtle: var(--border-subtle-dark);
     --border-strong: var(--border-strong-dark);
     --header-glass: var(--header-glass-dark);
+    --shadow-card: var(--shadow-card-dark);
+    --shadow-hover: var(--shadow-hover-dark);
   }
 
   &:has(> head > meta[name="color-scheme"][content="light"]) {
@@ -143,6 +163,7 @@
     --bg-card: var(--bg-card-light);
     --bg-window-bar: var(--bg-window-bar-light);
     --bg-stage: var(--bg-stage-light);
+    --bg-pill: var(--bg-pill-light);
     --text-primary: var(--text-primary-light);
     --text-secondary: var(--text-secondary-light);
     --text-muted: var(--text-muted-light);
@@ -153,6 +174,8 @@
     --border-subtle: var(--border-subtle-light);
     --border-strong: var(--border-strong-light);
     --header-glass: var(--header-glass-light);
+    --shadow-card: var(--shadow-card-light);
+    --shadow-hover: var(--shadow-hover-light);
   }
 
   /* Typography & Layout Tokens */
@@ -163,8 +186,6 @@
   --radius-sm: 10px;
   --radius-md: 16px;
   --radius-lg: 22px;
-  --shadow-card: 0 10px 30px -10px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
-  --shadow-hover: 0 20px 40px -12px rgba(37, 99, 235, 0.14), 0 4px 12px -2px rgba(15, 23, 42, 0.06);
 
   /* Disable root view transition so only targeted project cards morph */
   view-transition-name: none;
@@ -227,6 +248,7 @@ body {
   line-height: 1.65;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 ::selection {
@@ -286,7 +308,7 @@ img {
 }
 
 /* =====================================================
-   NORDIC DAYLIGHT STICKY HEADER
+   NORDIC DAYLIGHT / OBSIDIAN STICKY HEADER
    ===================================================== */
 .nordic-navbar {
   position: fixed;
@@ -299,11 +321,11 @@ img {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-subtle);
-  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
 }
 
 .nordic-navbar.scrolled {
-  box-shadow: 0 8px 24px -10px rgba(15, 23, 42, 0.1);
+  box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.18);
   border-bottom-color: var(--border-strong);
 }
 
@@ -339,9 +361,9 @@ img {
   font-weight: 600;
   padding: 3px 9px;
   border-radius: 999px;
-  background: color-mix(in oklab, var(--brand-primary) 12%, var(--bg-card));
+  background: color-mix(in oklab, var(--brand-primary) 14%, var(--bg-card));
   color: var(--brand-primary);
-  border: 1px solid color-mix(in oklab, var(--brand-primary) 30%, var(--border-subtle));
+  border: 1px solid color-mix(in oklab, var(--brand-primary) 32%, var(--border-subtle));
 }
 
 .nav-links-pillbox {
@@ -350,7 +372,7 @@ img {
   gap: 4px;
   padding: 4px;
   border-radius: 999px;
-  background: var(--bg-secondary);
+  background: var(--bg-window-bar);
   border: 1px solid var(--border-subtle);
 }
 
@@ -370,7 +392,7 @@ img {
 .nav-link-item.active {
   background: var(--bg-card);
   color: var(--brand-primary);
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.07);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .nav-actions {
@@ -386,11 +408,12 @@ img {
   padding: 8px 14px;
   border-radius: 999px;
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   color: var(--text-primary);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
+  box-shadow: var(--shadow-card);
   transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 
@@ -413,7 +436,7 @@ img {
   color: #ffffff;
   font-size: 0.85rem;
   font-weight: 600;
-  border: 1.5px solid transparent;
+  border: 1px solid transparent;
   transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -428,7 +451,7 @@ img {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   background: var(--bg-card);
   color: var(--text-primary);
   align-items: center;
@@ -437,15 +460,23 @@ img {
 }
 
 /* =====================================================
-   NORDIC DAYLIGHT HERO SECTION + 3-STAT RIBBON
+   HERO SECTION + 3-STAT RIBBON
    ===================================================== */
 .nordic-hero {
   position: relative;
   padding-top: calc(var(--nav-height) + 48px);
   padding-bottom: 64px;
   background:
-    radial-gradient(circle at 12% 18%, color-mix(in oklab, var(--brand-primary) 9%, transparent), transparent 42%),
-    radial-gradient(circle at 88% 22%, color-mix(in oklab, var(--brand-secondary) 9%, transparent), transparent 40%),
+    radial-gradient(
+      circle at 14% 18%,
+      color-mix(in oklab, var(--brand-primary) 12%, transparent),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 86% 24%,
+      color-mix(in oklab, var(--brand-secondary) 10%, transparent),
+      transparent 38%
+    ),
     var(--bg-primary);
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -464,7 +495,7 @@ img {
   padding: 6px 14px;
   border-radius: 999px;
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -477,7 +508,7 @@ img {
   height: 9px;
   border-radius: 50%;
   background: var(--brand-secondary);
-  box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand-secondary) 22%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand-secondary) 24%, transparent);
 }
 
 .hero-kicker {
@@ -510,13 +541,14 @@ img {
   gap: 10px;
   padding: 8px 16px;
   border-radius: var(--radius-sm);
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
   font-family: var(--font-mono);
   font-size: 0.92rem;
   font-weight: 600;
   color: var(--brand-secondary);
   margin-bottom: 20px;
+  box-shadow: var(--shadow-card);
 }
 
 .typed-cursor {
@@ -560,7 +592,7 @@ img {
   color: #ffffff;
   font-size: 0.94rem;
   font-weight: 600;
-  border: 1.5px solid transparent;
+  border: 1px solid transparent;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -581,7 +613,8 @@ img {
   color: var(--text-primary);
   font-size: 0.94rem;
   font-weight: 600;
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-card);
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
@@ -603,8 +636,9 @@ img {
   height: 42px;
   border-radius: 12px;
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   color: var(--text-secondary);
+  box-shadow: var(--shadow-card);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -618,7 +652,7 @@ img {
   transform: translateY(-2px);
 }
 
-/* Right Column: Clean Nordic Browser-Framed Portrait Card */
+/* Right Column: Clean Browser-Framed Portrait Card */
 .hero-portrait-stage {
   position: relative;
   display: flex;
@@ -629,7 +663,7 @@ img {
   width: 100%;
   max-width: 430px;
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-hover);
   overflow: hidden;
@@ -711,7 +745,7 @@ img {
   gap: 10px;
   padding: 10px 14px;
   border-radius: 12px;
-  background: var(--bg-secondary);
+  background: var(--bg-pill);
   border: 1px solid var(--border-subtle);
 }
 
@@ -749,7 +783,7 @@ img {
   gap: 8px;
   padding: 8px 11px;
   border-radius: 10px;
-  background: var(--bg-primary);
+  background: var(--bg-pill);
   border: 1px solid var(--border-subtle);
   font-size: 0.78rem;
   font-weight: 600;
@@ -770,7 +804,7 @@ img {
 
 .stat-ribbon-card {
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   padding: 20px 24px;
   display: flex;
@@ -830,7 +864,7 @@ img {
   color: var(--brand-primary);
   padding: 4px 12px;
   border-radius: 999px;
-  background: color-mix(in oklab, var(--brand-primary) 10%, var(--bg-card));
+  background: color-mix(in oklab, var(--brand-primary) 12%, var(--bg-card));
   border: 1px solid color-mix(in oklab, var(--brand-primary) 28%, var(--border-subtle));
 }
 
@@ -854,8 +888,6 @@ img {
 
 /* =====================================================
    OPTION 5: 2-COLUMN BROWSER-FRAMED PROJECTS GRID
-   Modern Web Guidance: group-element-transitions,
-   same-document-transitions, animate-element-entry-exit
    ===================================================== */
 .projects-toolbar {
   display: flex;
@@ -882,7 +914,8 @@ img {
   font-weight: 600;
   background: var(--bg-card);
   color: var(--text-secondary);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-card);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -896,7 +929,7 @@ img {
   background: var(--brand-primary);
   color: #ffffff;
   border-color: var(--brand-primary);
-  box-shadow: 0 6px 16px -4px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 6px 16px -4px rgba(37, 99, 235, 0.45);
 }
 
 .nordic-projects-grid {
@@ -914,7 +947,7 @@ img {
 .nordic-project-card {
   view-transition-class: project-item;
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   overflow: hidden;
   display: flex;
@@ -1106,7 +1139,7 @@ img {
   left: 8px;
   padding: 3px 8px;
   border-radius: 6px;
-  background: rgba(15, 23, 42, 0.82);
+  background: rgba(9, 11, 16, 0.85);
   color: #ffffff;
   font-family: var(--font-mono);
   font-size: 0.68rem;
@@ -1119,9 +1152,9 @@ img {
   right: 12px;
   padding: 6px 12px;
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.84);
+  background: rgba(9, 11, 16, 0.85);
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   font-size: 0.76rem;
   font-weight: 600;
   display: inline-flex;
@@ -1159,7 +1192,7 @@ img {
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 8px;
-  background: color-mix(in oklab, var(--brand-primary) 12%, var(--bg-secondary));
+  background: color-mix(in oklab, var(--brand-primary) 14%, var(--bg-pill));
   color: var(--brand-primary);
   border: 1px solid color-mix(in oklab, var(--brand-primary) 28%, var(--border-subtle));
 }
@@ -1191,7 +1224,7 @@ img {
   gap: 8px 12px;
   padding: 14px;
   border-radius: 12px;
-  background: var(--bg-secondary);
+  background: var(--bg-pill);
   border: 1px solid var(--border-subtle);
 }
 
@@ -1225,7 +1258,7 @@ img {
   font-weight: 600;
   padding: 4px 10px;
   border-radius: 6px;
-  background: var(--bg-primary);
+  background: var(--bg-pill);
   color: var(--text-secondary);
   border: 1px solid var(--border-subtle);
 }
@@ -1263,8 +1296,8 @@ img {
   translate: 0 0;
   padding: 14px;
   border-radius: 12px;
-  background: color-mix(in oklab, var(--brand-primary) 7%, var(--bg-secondary));
-  border: 1px solid color-mix(in oklab, var(--brand-primary) 25%, var(--border-subtle));
+  background: color-mix(in oklab, var(--brand-primary) 10%, var(--bg-pill));
+  border: 1px solid color-mix(in oklab, var(--brand-primary) 28%, var(--border-subtle));
   font-size: 0.85rem;
   color: var(--text-secondary);
   transition:
@@ -1317,7 +1350,7 @@ img {
 
 .about-profile-card {
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-card);
@@ -1333,7 +1366,7 @@ img {
 .about-fact-box {
   padding: 12px;
   border-radius: 12px;
-  background: var(--bg-secondary);
+  background: var(--bg-pill);
   border: 1px solid var(--border-subtle);
 }
 
@@ -1379,7 +1412,8 @@ img {
   padding: 12px 14px;
   border-radius: 12px;
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-card);
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -1400,16 +1434,17 @@ img {
 
 .skill-nordic-card {
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   padding: 24px;
   box-shadow: var(--shadow-card);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .skill-nordic-card:hover {
   transform: translateY(-3px);
   border-color: var(--brand-primary);
+  box-shadow: var(--shadow-hover);
 }
 
 .skill-card-head {
@@ -1423,7 +1458,7 @@ img {
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: color-mix(in oklab, var(--brand-primary) 12%, var(--bg-secondary));
+  background: color-mix(in oklab, var(--brand-primary) 14%, var(--bg-pill));
   color: var(--brand-primary);
   display: inline-flex;
   align-items: center;
@@ -1450,7 +1485,7 @@ img {
   gap: 7px;
   padding: 6px 12px;
   border-radius: 8px;
-  background: var(--bg-secondary);
+  background: var(--bg-pill);
   border: 1px solid var(--border-subtle);
   font-size: 0.82rem;
   font-weight: 600;
@@ -1465,13 +1500,14 @@ img {
 .marquee-bar-wrap {
   margin-top: 36px;
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   padding: 14px 18px;
   display: flex;
   align-items: center;
   gap: 16px;
   overflow: hidden;
+  box-shadow: var(--shadow-card);
 }
 
 .marquee-pause-btn {
@@ -1481,7 +1517,7 @@ img {
   gap: 6px;
   padding: 6px 12px;
   border-radius: 8px;
-  background: var(--bg-secondary);
+  background: var(--bg-pill);
   border: 1px solid var(--border-strong);
   color: var(--text-primary);
   font-family: var(--font-mono);
@@ -1498,7 +1534,7 @@ img {
 
 .marquee-track {
   display: flex;
-   gap: 14px;
+  gap: 14px;
   width: max-content;
   animation: nordic-marquee 32s linear infinite;
   @media (prefers-reduced-motion: reduce) {
@@ -1522,7 +1558,7 @@ img {
   font-weight: 600;
   padding: 5px 12px;
   border-radius: 999px;
-  background: var(--bg-secondary);
+  background: var(--bg-pill);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   white-space: nowrap;
@@ -1533,12 +1569,12 @@ img {
    ===================================================== */
 .cert-nordic-card {
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-card);
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
+  grid-template-columns: 1.08fr 0.92fr;
 }
 
 .cert-preview-side {
@@ -1555,14 +1591,30 @@ img {
   align-items: center;
   justify-content: center;
   cursor: zoom-in;
+  position: relative;
+  min-height: 360px;
 }
 
 .cert-image-stage img {
   border-radius: 12px;
   border: 1px solid var(--border-strong);
-  box-shadow: var(--shadow-card);
-  max-height: 360px;
+  background: #ffffff;
+  box-shadow: 0 14px 32px -10px rgba(0, 0, 0, 0.25);
+  max-height: 370px;
+  width: 100%;
   object-fit: contain;
+  transition: transform 0.25s ease;
+}
+
+.cert-image-stage:hover img {
+  transform: scale(1.015);
+}
+
+.cert-pdf-embed {
+  width: 100%;
+  height: 410px;
+  border: none;
+  background: #ffffff;
 }
 
 .cert-info-side {
@@ -1570,7 +1622,7 @@ img {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 18px;
+  gap: 16px;
 }
 
 .cert-verified-pill {
@@ -1580,11 +1632,17 @@ img {
   align-self: flex-start;
   padding: 5px 12px;
   border-radius: 999px;
-  background: color-mix(in oklab, var(--brand-secondary) 14%, var(--bg-card));
+  background: color-mix(in oklab, var(--brand-secondary) 14%, var(--bg-pill));
   color: var(--brand-secondary);
   font-family: var(--font-mono);
   font-size: 0.76rem;
   font-weight: 700;
+}
+
+.cert-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 }
 
 .cert-skills-list {
@@ -1597,12 +1655,12 @@ img {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-primary);
   padding: 9px 12px;
   border-radius: 10px;
-  background: var(--bg-secondary);
+  background: var(--bg-pill);
   border: 1px solid var(--border-subtle);
 }
 
@@ -1632,15 +1690,21 @@ img {
   padding: 18px 20px;
   border-radius: var(--radius-md);
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   box-shadow: var(--shadow-card);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.contact-item-card:hover {
+  border-color: var(--brand-primary);
+  transform: translateY(-2px);
 }
 
 .contact-icon-circle {
   width: 46px;
   height: 46px;
   border-radius: 12px;
-  background: color-mix(in oklab, var(--brand-primary) 12%, var(--bg-secondary));
+  background: color-mix(in oklab, var(--brand-primary) 14%, var(--bg-pill));
   color: var(--brand-primary);
   display: inline-flex;
   align-items: center;
@@ -1651,7 +1715,7 @@ img {
 
 .contact-form-card {
   background: var(--bg-card);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   padding: 32px;
   box-shadow: var(--shadow-card);
@@ -1681,8 +1745,8 @@ img {
   width: 100%;
   padding: 12px 14px;
   border-radius: 10px;
-  background: var(--bg-primary);
-  border: 1.5px solid var(--border-strong);
+  background: var(--bg-pill);
+  border: 1px solid var(--border-strong);
   color: var(--text-primary);
   font-family: var(--font-body);
   font-size: 0.92rem;
@@ -1719,47 +1783,48 @@ dialog.case-study-dialog {
   width: min(92vw, 980px);
   max-height: 90vh;
   border-radius: var(--radius-lg);
-  border: 1.5px solid var(--border-strong);
+  border: 1px solid var(--border-strong);
   background: var(--bg-card);
   color: var(--text-primary);
   padding: 0;
-  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.65);
   overflow: hidden;
 
   opacity: 0;
-  transform: scale(0.94);
+  transform: scale(0.95);
   transition-property: opacity, transform, display, overlay;
-  transition-duration: 0.28s;
+  transition-duration: 0.26s;
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   transition-behavior: allow-discrete;
 }
 
 dialog.case-study-dialog::backdrop {
-  background-color: rgba(15, 23, 42, 0);
+  background-color: rgba(9, 11, 16, 0);
   backdrop-filter: blur(0px);
   transition-property: background-color, backdrop-filter, display, overlay;
-  transition-duration: 0.28s;
+  transition-duration: 0.26s;
   transition-timing-function: ease-out;
   transition-behavior: allow-discrete;
 }
 
-:is(dialog.case-study-dialog[open]):where(:not([data-closing])) {
+dialog.case-study-dialog[open]:not([data-closing]) {
   opacity: 1;
   transform: scale(1);
+}
 
-  @starting-style {
+dialog.case-study-dialog[open]:not([data-closing])::backdrop {
+  background-color: rgba(9, 11, 16, 0.8);
+  backdrop-filter: blur(6px);
+}
+
+@starting-style {
+  dialog.case-study-dialog[open]:not([data-closing]) {
     opacity: 0;
-    transform: scale(0.94);
+    transform: scale(0.95);
   }
-
-  &::backdrop {
-    background-color: rgba(15, 23, 42, 0.76);
-    backdrop-filter: blur(6px);
-
-    @starting-style {
-      background-color: rgba(15, 23, 42, 0);
-      backdrop-filter: blur(0px);
-    }
+  dialog.case-study-dialog[open]:not([data-closing])::backdrop {
+    background-color: rgba(9, 11, 16, 0);
+    backdrop-filter: blur(0px);
   }
 }
 
@@ -1769,7 +1834,7 @@ dialog.case-study-dialog::backdrop {
     transition-duration: 0.1s;
   }
   @starting-style {
-    :is(dialog.case-study-dialog[open]):where(:not([data-closing])) {
+    dialog.case-study-dialog[open]:not([data-closing]) {
       transform: none;
     }
   }
@@ -1819,6 +1884,7 @@ dialog.case-study-dialog::backdrop {
   .project-features-grid,
   .about-highlights-grid,
   .cert-skills-list,
+  .cert-meta-grid,
   .form-grid-2 {
     grid-template-columns: 1fr;
   }

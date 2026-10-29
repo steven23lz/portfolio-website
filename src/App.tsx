@@ -245,7 +245,6 @@ export function App() {
   const [activeCategory, setActiveCategory] = useState<ProjectCategory>("all")
   const projectsGridRef = useRef<HTMLDivElement | null>(null)
 
-  // Track which tab (0, 1, or 'split') is active per project card
   const [activeScreenTab, setActiveScreenTab] = useState<
     Record<string, ScreenViewMode>
   >({
@@ -256,6 +255,9 @@ export function App() {
     "clinic-management": 0,
     "cinebai-mobile": 0,
   })
+
+  // Certificate view mode: 'image' (high-res rendered PNG) or 'pdf' (embedded PDF viewer)
+  const [certViewMode, setCertViewMode] = useState<"image" | "pdf">("image")
 
   const filteredProjects =
     activeCategory === "all"
@@ -291,10 +293,9 @@ export function App() {
   const toggleCardDetails = async (id: string) => {
     const el = detailRefs.current[id]
     if (!el) return
-    const isCurrentlyOpen = !el.hidden && !el.hasAttribute("data-closing")
+    const isCurrentlyOpen = Boolean(openDetails[id])
 
     if (isCurrentlyOpen) {
-      setOpenDetails((prev) => ({ ...prev, [id]: false }))
       if (canTransitionDisplay()) {
         el.hidden = true
       } else {
@@ -311,6 +312,7 @@ export function App() {
         el.removeAttribute("data-closing")
         el.hidden = true
       }
+      setOpenDetails((prev) => ({ ...prev, [id]: false }))
     } else {
       el.removeAttribute("data-closing")
       el.hidden = false
@@ -395,13 +397,22 @@ export function App() {
     setFormStatus("sent")
   }
 
+  const certificateLightboxItem = [
+    {
+      src: "/assets/certificate-preview.png",
+      label: "Official Certificate",
+      caption:
+        "Oracle Academy Award of Course Completion — Java Fundamentals (Presented to Steven Floyd Sendrijas, June 19, 2024)",
+    },
+  ]
+
   return (
     <>
       {/* MANDATORY decorative scroll progress bar with aria-hidden="true" */}
       <div id="scroll-progress" ref={progressRef} aria-hidden="true" />
 
       {/* ======================================================================
-         NORDIC DAYLIGHT STICKY HEADER
+         NORDIC DAYLIGHT / OBSIDIAN STICKY HEADER
          ====================================================================== */}
       <header className={`nordic-navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="nav-inner">
@@ -412,7 +423,9 @@ export function App() {
               <span className="brand-mark-brackets">/&gt;</span>
             </span>
             <span className="brand-mode-pill">
-              {renderedTheme === "light" ? "Nordic Daylight" : "Nordic Night"}
+              {renderedTheme === "light"
+                ? "Nordic Daylight"
+                : "Obsidian Dark"}
             </span>
           </a>
 
@@ -482,7 +495,7 @@ export function App() {
           <div
             style={{
               background: "var(--bg-card)",
-              borderBottom: "1.5px solid var(--border-strong)",
+              borderBottom: "1px solid var(--border-strong)",
               padding: "16px 24px",
             }}
           >
@@ -519,7 +532,7 @@ export function App() {
 
       <main>
         {/* ====================================================================
-           SECTION 1: NORDIC DAYLIGHT HERO + 3-STAT RIBBON
+           SECTION 1: NORDIC HERO + 3-STAT RIBBON
            ==================================================================== */}
         <section id="home" className="nordic-hero">
           <div className="container">
@@ -561,18 +574,13 @@ export function App() {
                     <i className="fas fa-layer-group" aria-hidden="true" />
                     <span>Explore 6 Projects</span>
                   </a>
-                  <a
-                    href={PROFILE_DATA.certificatePdf}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn-secondary-nordic"
-                  >
+                  <a href="#certificate" className="btn-secondary-nordic">
                     <i className="fas fa-certificate" aria-hidden="true" />
-                    <span>Oracle Credential</span>
+                    <span>View Certificate</span>
                   </a>
                   <a href="#contact" className="btn-secondary-nordic">
                     <i className="fas fa-paper-plane" aria-hidden="true" />
-                    <span>Get In Touch</span>
+                    <span>Contact Me</span>
                   </a>
                 </div>
 
@@ -958,7 +966,7 @@ export function App() {
                           detailRefs.current[project.id] = el
                         }}
                         className="project-details"
-                        hidden
+                        hidden={!openDetails[project.id]}
                       >
                         <p style={{ marginBottom: "6px" }}>
                           {project.detailText}
@@ -1234,60 +1242,103 @@ export function App() {
               <h2 className="section-heading">
                 Verified <span>Academic Certification</span>
               </h2>
+              <p className="section-subtext">
+                Click the certificate to inspect it in fullscreen, switch to the
+                interactive PDF reader, or download the official document.
+              </p>
             </div>
 
             <div className="cert-nordic-card">
               <div className="cert-preview-side">
-                <div className="window-chrome-bar">
-                  <div className="window-dots" aria-hidden="true">
-                    <span className="window-dot red" />
-                    <span className="window-dot amber" />
-                    <span className="window-dot green" />
+                <div className="project-window-header">
+                  <div className="project-window-left">
+                    <div className="window-dots" aria-hidden="true">
+                      <span className="window-dot red" />
+                      <span className="window-dot amber" />
+                      <span className="window-dot green" />
+                    </div>
+                    <span className="project-url-bar">
+                      oracle-academy://java-fundamentals.cert
+                    </span>
                   </div>
-                  <span className="window-address-pill">
-                    oracle-academy://java-fundamentals.cert
-                  </span>
+
+                  {/* Toggle between High-Res Certificate Image and Live Embedded PDF */}
+                  <div
+                    className="screen-tabs-group"
+                    role="tablist"
+                    aria-label="Certificate viewer mode"
+                  >
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={certViewMode === "image"}
+                      onClick={() => setCertViewMode("image")}
+                      className={`screen-tab-btn ${
+                        certViewMode === "image" ? "active" : ""
+                      }`}
+                    >
+                      Certificate View
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={certViewMode === "pdf"}
+                      onClick={() => setCertViewMode("pdf")}
+                      className={`screen-tab-btn ${
+                        certViewMode === "pdf" ? "active" : ""
+                      }`}
+                    >
+                      PDF Reader
+                    </button>
+                  </div>
                 </div>
 
-                <div
-                  className="cert-image-stage"
-                  onClick={() =>
-                    openLightbox("Oracle Academy — Java Fundamentals", [
-                      {
-                        src: "/assets/certificate-preview.png",
-                        label: "Official Certificate",
-                        caption:
-                          "Oracle Academy Java Fundamentals — Course Completion Certificate awarded to Steven Floyd Sendrijas",
-                      },
-                    ])
-                  }
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      openLightbox("Oracle Academy — Java Fundamentals", [
-                        {
-                          src: "/assets/certificate-preview.png",
-                          label: "Official Certificate",
-                          caption:
-                            "Oracle Academy Java Fundamentals — Course Completion Certificate awarded to Steven Floyd Sendrijas",
-                        },
-                      ])
+                {certViewMode === "image" ? (
+                  <div
+                    className="cert-image-stage"
+                    onClick={() =>
+                      openLightbox(
+                        "Oracle Academy — Java Fundamentals",
+                        certificateLightboxItem,
+                        0
+                      )
                     }
-                  }}
-                  aria-label="Inspect Oracle Academy Java Fundamentals certificate in fullscreen"
-                >
-                  <img
-                    src="/assets/certificate-preview.png"
-                    alt="Oracle Academy Java Fundamentals Certificate"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault()
+                        openLightbox(
+                          "Oracle Academy — Java Fundamentals",
+                          certificateLightboxItem,
+                          0
+                        )
+                      }
+                    }}
+                    aria-label="Inspect Oracle Academy Java Fundamentals certificate in fullscreen"
+                  >
+                    <img
+                      src="/assets/certificate-preview.png"
+                      alt="Oracle Academy Award of Course Completion in Java Fundamentals presented to Steven Floyd Sendrijas"
+                    />
+                    <span className="viewport-lightbox-pill">
+                      <i className="fas fa-search-plus" aria-hidden="true" />
+                      <span>Click to Zoom Fullscreen</span>
+                    </span>
+                  </div>
+                ) : (
+                  <iframe
+                    src="/assets/certificate.pdf"
+                    title="Oracle Academy Java Fundamentals Official PDF"
+                    className="cert-pdf-embed"
                   />
-                </div>
+                )}
               </div>
 
               <div className="cert-info-side">
                 <span className="cert-verified-pill">
-                  <i className="fas fa-check-circle" aria-hidden="true" />
-                  <span>Oracle Academy Verified Credential</span>
+                  <i className="fas fa-shield-alt" aria-hidden="true" />
+                  <span>Verified by Oracle Academy</span>
                 </span>
 
                 <h3
@@ -1298,27 +1349,41 @@ export function App() {
                     color: "var(--text-primary)",
                   }}
                 >
-                  Java Fundamentals — Course Completion
+                  Java Fundamentals — Award of Course Completion
                 </h3>
 
                 <p
                   style={{
-                    fontSize: "0.96rem",
+                    fontSize: "0.95rem",
                     color: "var(--text-secondary)",
                   }}
                 >
-                  Awarded by <strong>Oracle Academy</strong> for mastering
-                  object-oriented programming principles, Java syntax, data
-                  structures, control flow, and software engineering foundations
-                  at <strong>STI College</strong>.
+                  Awarded by <strong>Oracle Academy</strong> to{" "}
+                  <strong>Steven Floyd Sendrijas</strong> for satisfactory
+                  completion of all coursework in Java Fundamentals, covering
+                  object-oriented principles, data structures, and core Java
+                  syntax.
                 </p>
+
+                <div className="cert-meta-grid">
+                  <div className="about-fact-box">
+                    <div className="about-fact-label">Completion Date</div>
+                    <div className="about-fact-value">June 19, 2024</div>
+                  </div>
+                  <div className="about-fact-box">
+                    <div className="about-fact-label">Instructor</div>
+                    <div className="about-fact-value">
+                      Beronika Peña (Oracle Academy)
+                    </div>
+                  </div>
+                </div>
 
                 <div className="cert-skills-list">
                   {[
                     "Object-Oriented Programming",
                     "Core Java Syntax & APIs",
                     "Classes, Inheritance & Logic",
-                    "Algorithmic Problem Solving",
+                    "Data Structures & Algorithms",
                   ].map((skill) => (
                     <div key={skill} className="cert-skill-chip">
                       <i className="fas fa-check" aria-hidden="true" />
@@ -1331,14 +1396,11 @@ export function App() {
                   <button
                     type="button"
                     onClick={() =>
-                      openLightbox("Oracle Academy — Java Fundamentals", [
-                        {
-                          src: "/assets/certificate-preview.png",
-                          label: "Official Certificate",
-                          caption:
-                            "Oracle Academy Java Fundamentals — Course Completion Certificate awarded to Steven Floyd Sendrijas",
-                        },
-                      ])
+                      openLightbox(
+                        "Oracle Academy — Java Fundamentals",
+                        certificateLightboxItem,
+                        0
+                      )
                     }
                     className="btn-primary-nordic"
                   >
@@ -1353,7 +1415,7 @@ export function App() {
                     className="btn-secondary-nordic"
                   >
                     <i className="fas fa-file-pdf" aria-hidden="true" />
-                    <span>Download PDF</span>
+                    <span>Open Official PDF</span>
                   </a>
                 </div>
               </div>
@@ -1695,6 +1757,11 @@ export function App() {
                   width: "auto",
                   borderRadius: "10px",
                   objectFit: "contain",
+                  background: lightboxState.images[
+                    lightboxState.index
+                  ]?.src.includes("certificate")
+                    ? "#ffffff"
+                    : "transparent",
                 }}
               />
             </div>
