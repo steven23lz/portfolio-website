@@ -1,44 +1,31 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: ["class", '[data-theme="dark"]'],
+  darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
     extend: {
       fontFamily: {
-        display: ["Syne", "sans-serif"],
-        sans: ["DM Sans", "sans-serif"],
+        sans: ["Geist", "system-ui", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        mono: ["Geist Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+        pixel: ["Geist Pixel", "Geist Mono", "ui-monospace", "monospace"],
+        serif: ["Source Serif 4", "Georgia", "Times New Roman", "serif"],
       },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+        white: "rgb(var(--bg) / <alpha-value>)",
+        ink: "rgb(var(--ink) / <alpha-value>)",
+        gray: {
+          50: "rgb(var(--g50) / <alpha-value>)",
+          100: "rgb(var(--g100) / <alpha-value>)",
+          200: "rgb(var(--g200) / <alpha-value>)",
+          300: "rgb(var(--g300) / <alpha-value>)",
+          400: "rgb(var(--g400) / <alpha-value>)",
+          500: "rgb(var(--g500) / <alpha-value>)",
+          600: "rgb(var(--g600) / <alpha-value>)",
+          700: "rgb(var(--g700) / <alpha-value>)",
+          800: "rgb(var(--g800) / <alpha-value>)",
+          900: "rgb(var(--g900) / <alpha-value>)",
+          950: "rgb(var(--g950) / <alpha-value>)",
         },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
       },
     },
   },

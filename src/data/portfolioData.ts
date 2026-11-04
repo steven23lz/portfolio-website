@@ -11,6 +11,9 @@ export interface ProjectItem {
   num: string
   vtName: string
   title: string
+  shortTitle: string
+  badgeLabel: string
+  secondaryBadges: string[]
   subtitle: string
   windowUrl: string
   category: Exclude<ProjectCategory, "all">
@@ -32,11 +35,21 @@ export interface SkillCategoryItem {
   badges: { name: string; icon: string }[]
 }
 
+export interface ExperienceRow {
+  year: string
+  role: string
+  org: string
+  detail: string
+}
+
 export const PROFILE_DATA = {
   firstName: "Steven Floyd",
   lastName: "Sendrijas",
+  displayName: "Steven Sendrijas",
   fullName: "Steven Floyd Sendrijas",
   school: "STI College",
+  campus: "STI College CDO",
+  degree: "BS in Information Technology",
   typedRoles: [
     "Full-Stack Web Developer",
     "Unity 2D Game Developer",
@@ -49,12 +62,45 @@ export const PROFILE_DATA = {
   email: "stevensendrijas@gmail.com",
   phone: "09150448104",
   location: "Patag Zone 7, Cagayan de Oro City, Misamis Oriental 9000",
+  shortLocation: "Cagayan de Oro, PH",
   facebook: "https://www.facebook.com/steven.sendrijas.5",
   instagram: "https://www.instagram.com/itsme_harutoo/",
   github: "https://github.com/steven23lz",
   avatar: "/assets/graduate.jpg",
   certificatePdf: "/assets/certificate.pdf",
+  certificatePreview: "/assets/certificate-preview.png",
 }
+
+export const EXPERIENCE_TIMELINE: ExperienceRow[] = [
+  {
+    year: "2026",
+    role: "Full-Stack, Unity 2D & AI Bot Developer",
+    org: "Trivia Attack · OverView · SpotiBAI",
+    detail:
+      "Architected a Unity 6 (URP 2D) educational RPG with 1,449 verified trivia questions, an HLS.js streaming platform with automated stream failover, and a 48kHz Opus Discord music & Bisaya AI companion.",
+  },
+  {
+    year: "2025",
+    role: "Full-Stack Web & Mobile Systems Developer",
+    org: "Enlogada Clinic · LGU Permits · CineBai",
+    detail:
+      "Built database-driven operational platforms in Laravel, React, React Native, and PostgreSQL/MySQL covering clinical patient workflows, local government business licensing, and QR cinema seat ticketing.",
+  },
+  {
+    year: "2025",
+    role: "Java Fundamentals Course Completion",
+    org: "Oracle Academy · Certified Dec 12, 2025",
+    detail:
+      "Awarded by Oracle Academy & STI College (Instructor:enchris/STI Faculty) for mastering object-oriented Java programming, data structures, and algorithmic problem solving.",
+  },
+  {
+    year: "2022—Now",
+    role: "BS in Information Technology (BSIT)",
+    org: "STI College · Cagayan de Oro",
+    detail:
+      "Focusing on software engineering, relational database architecture, full-stack web & mobile development, and interactive game systems.",
+  },
+]
 
 export const PROJECTS_DATA: ProjectItem[] = [
   {
@@ -62,7 +108,10 @@ export const PROJECTS_DATA: ProjectItem[] = [
     num: "01",
     vtName: "project-trivia-attack",
     title: "Trivia Attack — 2D Educational RPG",
-    subtitle: "Unity 6 (URP 2D) • C# Turn-Based Quiz RPG",
+    shortTitle: "Trivia Attack",
+    badgeLabel: "#1 Flagship RPG Build",
+    secondaryBadges: ["Unity 6 (URP 2D)", "1,449 Questions", "5 Academic Worlds"],
+    subtitle: "Unity 6 (URP 2D) · C# Turn-Based Quiz RPG",
     windowUrl: "unity://trivia-attack.rpg/world-select",
     category: "games",
     tags: ["Unity 6 (URP 2D)", "C#", "SpriteAnimator", "JSON Data"],
@@ -103,7 +152,10 @@ export const PROJECTS_DATA: ProjectItem[] = [
     num: "02",
     vtName: "project-overview-streaming",
     title: "OverView — Movie, TV & Anime Streaming",
-    subtitle: "React 18 • TypeScript • HLS Stream Proxy",
+    shortTitle: "OverView",
+    badgeLabel: "Full-Stack Streaming",
+    secondaryBadges: ["1080p HLS.js", "Auto-Failover Proxy", "Movies · TV · Anime"],
+    subtitle: "React 18 · TypeScript · HLS Stream Proxy",
     windowUrl: "https://overview-streaming.app/watch",
     category: "web",
     tags: ["React 18", "TypeScript", "Node.js", "PostgreSQL", "HLS.js"],
@@ -144,7 +196,10 @@ export const PROJECTS_DATA: ProjectItem[] = [
     num: "03",
     vtName: "project-spotibai-bot",
     title: "SpotiBAI — Discord Music & Bisaya AI Bot",
-    subtitle: "Discord.js v14 • 48kHz Opus • Bisaya AI",
+    shortTitle: "SpotiBAI",
+    badgeLabel: "Live Discord VC Bot",
+    secondaryBadges: ["48kHz Opus Voice", "Bisaya AI Companion", "FFmpeg DSP"],
+    subtitle: "Discord.js v14 · 48kHz Opus · Bisaya AI",
     windowUrl: "discord://mga-bushit/dota-pisot/spotibai",
     category: "bots",
     tags: ["TypeScript", "Discord.js v14", "@discordjs/voice", "PostgreSQL", "Prisma"],
@@ -185,7 +240,10 @@ export const PROJECTS_DATA: ProjectItem[] = [
     num: "04",
     vtName: "project-business-permit",
     title: "Business Permit System",
-    subtitle: "Laravel • PHP • MySQL • GovTech Workflow",
+    shortTitle: "Business Permit",
+    badgeLabel: "GovTech Licensing",
+    secondaryBadges: ["Laravel & MySQL", "Workflow Automation"],
+    subtitle: "Laravel · PHP · MySQL · GovTech Workflow",
     windowUrl: "https://lgu-permits.gov.local/dashboard",
     category: "web",
     tags: ["PHP", "Laravel", "MySQL", "Blade"],
@@ -218,7 +276,10 @@ export const PROJECTS_DATA: ProjectItem[] = [
     num: "05",
     vtName: "project-clinic-management",
     title: "Clinic Management System",
-    subtitle: "Laravel • React • PostgreSQL • Healthcare",
+    shortTitle: "Clinic System",
+    badgeLabel: "Healthcare Platform",
+    secondaryBadges: ["Enlogada Diagnostic", "Patient & Cashier Ops"],
+    subtitle: "Laravel · React · PostgreSQL · Healthcare",
     windowUrl: "https://enlogada-clinic.app/patient-portal",
     category: "web",
     tags: ["Laravel", "PostgreSQL", "React", "Tailwind"],
@@ -257,7 +318,10 @@ export const PROJECTS_DATA: ProjectItem[] = [
     num: "06",
     vtName: "project-cinebai-mobile",
     title: "CineBai — Cinema Ticketing App",
-    subtitle: "React Native • Node.js • QR Seat Booking",
+    shortTitle: "CineBai",
+    badgeLabel: "Mobile QR Ticketing",
+    secondaryBadges: ["React Native", "Seat Map & QR"],
+    subtitle: "React Native · Node.js · QR Seat Booking",
     windowUrl: "cinebai://mobile-app/seat-reservation",
     category: "games",
     tags: ["React Native", "Node.js", "Express", "PostgreSQL"],
@@ -369,9 +433,7 @@ export const SKILL_CATEGORIES: SkillCategoryItem[] = [
 export const TECH_MARQUEE_ITEMS = [
   "React 18",
   "TypeScript",
-  "shadcn/ui",
   "Tailwind CSS",
-  "Framer Motion",
   "Unity 6.5 (URP 2D)",
   "C#",
   "Node.js & Express",
